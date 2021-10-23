@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  pocket-users:
+    build: .
+    volumes:
+      - /usr/src/app/node_modules
+      - .:/usr/src/app
+    ports:
+      - 9229:9229
+    command: npm run start:dev
+    env_file:
+      - .env
+    networks:
+      - pocket-network
+  mongo:
+    image: mongo
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGODB_DATABASE_NAME}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
+    volumes:
+      - ./mongo-data:/data/db
+      - ./scripts/mongo/init-database.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    ports:
+      - 27017:27017
+    networks:
+      - pocket-network
+
+networks:
+  pocket-network:
+    external: true
