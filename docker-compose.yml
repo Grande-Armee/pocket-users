@@ -24,7 +24,17 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
     volumes:
       - ./mongo-data:/data/db
-      - ./scripts/mongo/init-database.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./mongo/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+      - ./mongo/replica.key:/data/replica.key.devel
+    entrypoint:
+      - bash
+      - -c
+      - |
+        cp /data/replica.key.devel /data/replicacopy.key
+        chmod 400 /data/replicacopy.key
+        chown 999:999 /data/replicacopy.key
+        exec docker-entrypoint.sh $$@
+    command: 'mongod --bind_ip_all --replSet replicaSet01 --keyFile /data/replicacopy.key'
     ports:
       - 27017:27017
     networks:

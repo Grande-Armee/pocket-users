@@ -1,2 +1,2 @@
-export * from './interfaces/mongo-config';
-export * from './mongo-config';
+export * from './interfaces/mongo-config.interface';
+export * from './mongo-config.provider';

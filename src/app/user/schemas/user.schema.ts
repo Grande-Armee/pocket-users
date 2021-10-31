@@ -1,15 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, LeanDocument, Model } from 'mongoose';
-
-export type UserDocument = User & Document;
+import { Document, Model } from 'mongoose';
 
 @Schema({
   timestamps: true,
   collection: 'users',
 })
-export class User {
+export class UserEntity {
+  public _id: string;
+
   @Prop({
     required: true,
+    unique: true,
   })
   public email: string;
 
@@ -17,6 +18,11 @@ export class User {
     required: true,
   })
   public password: string;
+
+  @Prop({
+    required: true,
+  })
+  public salt: string;
 
   @Prop({
     default: 'USER',
@@ -35,10 +41,10 @@ export class User {
   public updatedAt: Date;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(UserEntity);
+
+export type UserDocument = UserEntity & Document;
 
 export type UserModel = Model<UserDocument>;
 
-export type SerializedUser = LeanDocument<UserDocument>;
-
-export const USER_MODEL_TOKEN = User.name;
+export const USER_MODEL_TOKEN = UserEntity.name;
