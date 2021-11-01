@@ -25,4 +25,12 @@ export class MongoHelper {
     await this.session.abortTransaction();
     await this.session.endSession();
   }
+
+  public async runInTestTransaction(callback: (session: ClientSession) => Promise<void>): Promise<void> {
+    const session = await this.startSessionAndMockConnection();
+
+    await callback(session);
+
+    await this.rollbackAndTerminateSession();
+  }
 }

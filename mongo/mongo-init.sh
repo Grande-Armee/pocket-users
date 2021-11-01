@@ -14,7 +14,7 @@ mongo -- "$MONGO_INITDB_DATABASE" <<-EOJS
 EOJS
 
 {
-sleep 3 &&
+sleep 10 &&
 mongo -- "$MONGODB_DATABASE_NAME" <<-EOJS
     var rootUser = '$MONGODB_ROOT_USERNAME';
     var rootPassword = '$MONGODB_ROOT_PASSWORD';
