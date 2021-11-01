@@ -3,5 +3,5 @@ const baseConfig = require('./jest.config');
 
 module.exports = {
   ...baseConfig,
-  rootDir: 'src/integration-tests/tests',
+  testRegex: '.integration-spec.ts$',
 };

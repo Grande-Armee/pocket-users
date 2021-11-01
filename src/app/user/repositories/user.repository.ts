@@ -4,17 +4,17 @@ import { ObjectId } from 'mongodb';
 
 import { ClientSession } from '../../mongo/providers/unit-of-work';
 import { UserDTO } from '../dtos/user.dto';
-import { UserModel, USER_MODEL_TOKEN } from '../schemas/user.schema';
-import { UserEntitySerializer } from '../serializers/user-entity.serializer';
+import { UserMapper } from '../mappers/user.mapper';
+import { UserEntity, UserModel, USER_MODEL_TOKEN } from '../schemas/user.schema';
 
 @Injectable()
 export class UserRepository {
   public constructor(
     @InjectModel(USER_MODEL_TOKEN) private readonly userModel: UserModel,
-    private readonly userEntitySerializer: UserEntitySerializer,
+    private readonly userMapper: UserMapper,
   ) {}
 
-  public async readByUserId(session: ClientSession, userId: string): Promise<UserDTO | null> {
+  public async findByUserId(session: ClientSession, userId: string): Promise<UserDTO | null> {
     const entity = await this.userModel.findOne(
       {
         _id: new ObjectId(userId),
@@ -27,18 +27,14 @@ export class UserRepository {
       return null;
     }
 
-    return this.userEntitySerializer.serialize(entity);
+    return this.userMapper.mapEntityToDTO(entity);
   }
 
-  public async createTestUser(session: ClientSession): Promise<UserDTO> {
-    const entity = new this.userModel({
-      email: 'test@email.com',
-      password: 'test',
-      salt: 'salt',
-    });
+  public async createUser(session: ClientSession, userData: Partial<UserEntity>): Promise<UserDTO> {
+    const entity = new this.userModel({ ...userData });
 
     await entity.save({ session });
 
-    return this.userEntitySerializer.serialize(entity);
+    return this.userMapper.mapEntityToDTO(entity);
   }
 }

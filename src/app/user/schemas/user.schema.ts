@@ -25,6 +25,11 @@ export class UserEntity {
   public salt: string;
 
   @Prop({
+    default: false,
+  })
+  public isActive: boolean;
+
+  @Prop({
     default: 'USER',
   })
   public role: string;
