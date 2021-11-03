@@ -3,7 +3,7 @@ import { Global, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { mongoConfigProvider } from './providers/mongo-config';
-import { UnitOfWorkFactory } from './providers/unit-of-work';
+import { unitOfWorkFactoryProvider } from './providers/unit-of-work-factory';
 
 @Global()
 @Module({
@@ -14,7 +14,7 @@ import { UnitOfWorkFactory } from './providers/unit-of-work';
       ...mongoConfigProvider,
     }),
   ],
-  providers: [UnitOfWorkFactory],
-  exports: [MongooseModule, UnitOfWorkFactory],
+  providers: [unitOfWorkFactoryProvider],
+  exports: [MongooseModule, unitOfWorkFactoryProvider],
 })
 export class MongoModule {}

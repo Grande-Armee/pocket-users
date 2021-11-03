@@ -1,9 +1,9 @@
 import { TestingModule } from '@nestjs/testing';
 
-import { MongoHelper } from '../../../integration-tests/helpers/mongo/mongo.helper';
-import { TestModuleHelper } from '../../../integration-tests/helpers/test-module/test-module.helper';
-import { UserRepository } from '../repositories/user.repository';
-import { UserTestFactory } from '../tests-factories/user.factory';
+import { MongoHelper } from '../../../../integration-tests/helpers/mongo/mongo.helper';
+import { TestModuleHelper } from '../../../../integration-tests/helpers/test-module/test-module.helper';
+import { UserRepository } from '../../repositories/user/user.repository';
+import { UserTestFactory } from '../../tests-factories/user.factory';
 import { UserService } from './user.service';
 
 describe('UserService', () => {

@@ -1,4 +1,4 @@
-import { internet, helpers, lorem } from 'faker';
+import { internet, helpers } from 'faker';
 
 export class UserTestFactory {
   public static createEmail(): string {
@@ -15,9 +15,5 @@ export class UserTestFactory {
 
   public static createRole(): string {
     return 'USER';
-  }
-
-  public static createSalt(): string {
-    return lorem.word(32);
   }
 }
