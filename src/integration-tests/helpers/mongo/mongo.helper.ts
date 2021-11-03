@@ -2,7 +2,7 @@ import { getConnectionToken } from '@nestjs/mongoose';
 import { TestingModule } from '@nestjs/testing';
 import { Connection } from 'mongoose';
 
-import { ClientSession } from '../../../app/mongo/providers/unit-of-work';
+import { ClientSession } from '../../../app/mongo/providers/unit-of-work-factory';
 
 export class MongoHelper {
   private session: ClientSession;

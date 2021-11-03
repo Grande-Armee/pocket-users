@@ -1,8 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
-
-import { ClientSession } from './interfaces/client-session.interface';
+import { ClientSession } from './interfaces';
 
 export type TransactionalCallback<Result> = (session: ClientSession) => Promise<Result>;
 
@@ -44,16 +40,5 @@ export class UnitOfWork {
 
       throw e;
     }
-  }
-}
-
-@Injectable()
-export class UnitOfWorkFactory {
-  public constructor(@InjectConnection() private connection: Connection) {}
-
-  public async create(): Promise<UnitOfWork> {
-    const session = await this.connection.startSession();
-
-    return new UnitOfWork(session);
   }
 }

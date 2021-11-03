@@ -1,15 +1,17 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { UserMapper } from './mappers/user.mapper';
-import { UserRepository } from './repositories/user.repository';
+import { UserMapper } from './mappers/user/user.mapper';
+import { bcryptProvider } from './providers/bcrypt';
+import { jwtProvider } from './providers/jwt';
+import { UserRepository } from './repositories/user/user.repository';
 import { UserSchema, USER_MODEL_TOKEN } from './schemas/user.schema';
-import { AuthService } from './services/auth.service';
-import { UserService } from './services/user.service';
+import { HashService } from './services/hash/hash.service';
+import { TokenService } from './services/token/token.service';
+import { UserService } from './services/user/user.service';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: USER_MODEL_TOKEN, schema: UserSchema }])],
-  providers: [UserService, UserRepository, UserMapper, AuthService],
-  exports: [UserService, AuthService],
+  providers: [UserService, UserRepository, UserMapper, jwtProvider, bcryptProvider, HashService, TokenService],
 })
 export class UserModule {}

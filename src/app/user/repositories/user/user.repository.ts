@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 
-import { ClientSession } from '../../mongo/providers/unit-of-work';
-import { UserDTO } from '../dtos/user.dto';
-import { UserMapper } from '../mappers/user.mapper';
-import { UserEntity, UserModel, USER_MODEL_TOKEN } from '../schemas/user.schema';
+import { ClientSession } from '../../../mongo/providers/unit-of-work-factory';
+import { UserDTO } from '../../dtos/user.dto';
+import { UserMapper } from '../../mappers/user/user.mapper';
+import { UserEntity, UserModel, USER_MODEL_TOKEN } from '../../schemas/user.schema';
 
 @Injectable()
 export class UserRepository {

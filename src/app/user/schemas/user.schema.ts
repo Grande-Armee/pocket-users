@@ -20,11 +20,6 @@ export class UserEntity {
   public password: string;
 
   @Prop({
-    required: true,
-  })
-  public salt: string;
-
-  @Prop({
     default: false,
   })
   public isActive: boolean;

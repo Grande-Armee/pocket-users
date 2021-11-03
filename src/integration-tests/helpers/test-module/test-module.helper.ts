@@ -1,31 +1,9 @@
 import { EnvVariables, ENV_VARIABLES_TOKEN } from '@grande-armee/pocket-common/dist/common/env/providers/env-variables';
-import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/mongoose';
 import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
-import { Connection } from 'mongoose';
 
 import { AppModule } from '../../../app/app.module';
-import { UnitOfWork, UnitOfWorkFactory } from '../../../app/mongo/providers/unit-of-work';
-
-class UnitOfWorkFake extends UnitOfWork {
-  // TODO: disable this rule
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public override async commit(): Promise<void> {}
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected override async endSession(): Promise<void> {}
-}
-
-@Injectable()
-export class FakeUnitOfWorkFactory {
-  public constructor(@InjectConnection() private connection: Connection) {}
-
-  public async create(): Promise<UnitOfWork> {
-    const session = await this.connection.startSession();
-
-    return new UnitOfWorkFake(session);
-  }
-}
+import { UnitOfWorkFactory } from '../../../app/mongo/providers/unit-of-work-factory';
+import { UnitOfWorkFactoryFake } from '../mongo/unit-of-work-factory-fake';
 
 export class TestModuleHelper {
   private builder: TestingModuleBuilder;
@@ -43,7 +21,7 @@ export class TestModuleHelper {
   }
 
   public overrideUnitOfWork(): TestModuleHelper {
-    this.builder = this.builder.overrideProvider(UnitOfWorkFactory).useClass(FakeUnitOfWorkFactory);
+    this.builder = this.builder.overrideProvider(UnitOfWorkFactory).useClass(UnitOfWorkFactoryFake);
 
     return this;
   }
