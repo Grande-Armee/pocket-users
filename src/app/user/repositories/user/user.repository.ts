@@ -14,7 +14,7 @@ export class UserRepository {
     private readonly userMapper: UserMapper,
   ) {}
 
-  public async findByUserId(session: ClientSession, userId: string): Promise<UserDTO | null> {
+  public async findUserById(session: ClientSession, userId: string): Promise<UserDTO | null> {
     const entity = await this.userModel.findOne(
       {
         _id: new ObjectId(userId),
@@ -36,5 +36,44 @@ export class UserRepository {
     await entity.save({ session });
 
     return this.userMapper.mapEntityToDTO(entity);
+  }
+
+  public async removeUser(session: ClientSession, userId: string): Promise<void> {
+    const user = await this.findUserById(session, userId);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    await this.userModel.deleteOne(
+      {
+        _id: new ObjectId(userId),
+      },
+      { session },
+    );
+  }
+
+  public async updateUser(
+    session: ClientSession,
+    userId: string,
+    userData: Partial<UserEntity>,
+  ): Promise<UserDTO | null> {
+    const user = await this.findUserById(session, userId);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    await this.userModel.updateOne(
+      {
+        _id: new ObjectId(userId),
+      },
+      {
+        ...userData,
+      },
+      { session },
+    );
+
+    return this.findUserById(session, userId);
   }
 }

@@ -10,10 +10,14 @@ export class UserTestFactory {
   }
 
   public static createLanguage(): string {
-    return helpers.randomize(['en']);
+    return helpers.randomize(['en', 'pl', 'cz']);
   }
 
   public static createRole(): string {
     return 'USER';
+  }
+
+  public static createId(): string {
+    return internet.password(12);
   }
 }
