@@ -54,7 +54,7 @@ describe('UserService', () => {
       });
     });
 
-    it.only('should not create new user when user with given email already exists', async () => {
+    it('should not create new user when user with given email already exists', async () => {
       await mongoHelper.runInTestTransaction(async (session) => {
         const email = UserTestFactory.createEmail();
         const password = UserTestFactory.createPassword();
@@ -100,6 +100,7 @@ describe('UserService', () => {
     });
 
     it('should not log in user when user password does not match', async () => {
+      expect.assertions(1);
       await mongoHelper.runInTestTransaction(async (session) => {
         const email = UserTestFactory.createEmail();
         const password = UserTestFactory.createPassword();
