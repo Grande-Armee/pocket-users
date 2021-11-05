@@ -30,6 +30,30 @@ export class UserRepository {
     return this.userMapper.mapEntityToDTO(entity);
   }
 
+  public async findByEmail(session: ClientSession, email: string): Promise<UserDTO | null> {
+    const entity = await this.userModel.findOne(
+      {
+        email: email,
+      },
+      null,
+      { session },
+    );
+
+    if (!entity) {
+      return null;
+    }
+
+    return this.userMapper.mapEntityToDTO(entity);
+  }
+
+  public async findAll(session: ClientSession): Promise<UserDTO[]> {
+    const users = await this.userModel.find({}, null, { session });
+
+    const usersDTO: UserDTO[] = [];
+    users.forEach((user, _) => usersDTO.push(this.userMapper.mapEntityToDTO(user)));
+    return usersDTO;
+  }
+
   public async createUser(session: ClientSession, userData: Partial<UserEntity>): Promise<UserDTO> {
     const entity = new this.userModel({ ...userData });
 
