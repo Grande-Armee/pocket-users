@@ -2,16 +2,15 @@ import { TestingModule } from '@nestjs/testing';
 
 import { MongoHelper } from '../../../../integration-tests/helpers/mongo/mongo.helper';
 import { TestModuleHelper } from '../../../../integration-tests/helpers/test-module/test-module.helper';
-import { bcryptFactory } from '../../providers/bcrypt/bcrypt.factory';
-import { Bcrypt } from '../../providers/bcrypt/interfaces/bcrypt.interface';
 import { UserRepository } from '../../repositories/user/user.repository';
 import { UserTestFactory } from '../../tests-factories/user.factory';
+import { HashService } from '../hash/hash.service';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
   let testingModule: TestingModule;
   let mongoHelper: MongoHelper;
-  let bcrypt: Bcrypt;
+  let hashService: HashService;
 
   let userService: UserService;
   let userRepository: UserRepository;
@@ -19,10 +18,10 @@ describe('UserService', () => {
   beforeEach(async () => {
     testingModule = await TestModuleHelper.createTestingModule();
     mongoHelper = new MongoHelper(testingModule);
-    bcrypt = await bcryptFactory();
 
     userService = testingModule.get(UserService);
     userRepository = testingModule.get(UserRepository);
+    hashService = testingModule.get(HashService);
   });
 
   afterEach(async () => {
@@ -43,18 +42,18 @@ describe('UserService', () => {
         });
 
         expect(userDTO.email).toBe(email);
-        expect(await bcrypt.compare(password, userDTO.password)).toBeTruthy();
+        expect(await hashService.comparePasswords(password, userDTO.password)).toBeTruthy();
         expect(userDTO.language).toBe(language);
 
         const user = await userRepository.findByUserId(session, userDTO.id);
 
         expect(user).not.toBe(null);
-        expect(await bcrypt.compare(password, user!.password)).toBeTruthy();
+        expect(await hashService.comparePasswords(password, user!.password)).toBeTruthy();
         expect(user?.email).toBe(email);
       });
     });
 
-    it.only('should not create new user when user with given email already exists', async () => {
+    it.skip('should not create new user when user with given email already exists', async () => {
       await mongoHelper.runInTestTransaction(async (session) => {
         const email = UserTestFactory.createEmail();
         const password = UserTestFactory.createPassword();
@@ -77,6 +76,7 @@ describe('UserService', () => {
         }
 
         const users = await userRepository.findAll(session);
+
         expect(users.length).toBe(1);
       });
     });
@@ -100,15 +100,18 @@ describe('UserService', () => {
     });
 
     it('should not log in user when user password does not match', async () => {
+      expect.assertions(1);
+
       await mongoHelper.runInTestTransaction(async (session) => {
         const email = UserTestFactory.createEmail();
         const password = UserTestFactory.createPassword();
+        const hashedPassword = await hashService.hashPassword(password);
         const invalidPassword = UserTestFactory.createPassword();
         const language = UserTestFactory.createLanguage();
 
         await userRepository.createUser(session, {
           email,
-          password,
+          password: hashedPassword,
           language,
         });
 
@@ -127,11 +130,12 @@ describe('UserService', () => {
       await mongoHelper.runInTestTransaction(async (session) => {
         const email = UserTestFactory.createEmail();
         const password = UserTestFactory.createPassword();
+        const hashedPassword = await hashService.hashPassword(password);
         const language = UserTestFactory.createLanguage();
 
         await userRepository.createUser(session, {
           email,
-          password,
+          password: hashedPassword,
           language,
         });
 
