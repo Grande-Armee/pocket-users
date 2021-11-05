@@ -10,7 +10,7 @@ export class UserTestFactory {
   }
 
   public static createLanguage(): string {
-    return helpers.randomize(['en', 'pl', 'cz']);
+    return helpers.randomize(['en']);
   }
 
   public static createRole(): string {

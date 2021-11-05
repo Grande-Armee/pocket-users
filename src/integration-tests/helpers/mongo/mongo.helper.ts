@@ -14,6 +14,8 @@ export class MongoHelper {
 
     const session = await connection.startSession();
 
+    session.startTransaction();
+
     jest.spyOn(connection, 'startSession').mockImplementation(() => session);
 
     this.session = session;
@@ -29,8 +31,14 @@ export class MongoHelper {
   public async runInTestTransaction(callback: (session: ClientSession) => Promise<void>): Promise<void> {
     const session = await this.startSessionAndMockConnection();
 
-    await callback(session);
+    try {
+      await callback(session);
 
-    await this.rollbackAndTerminateSession();
+      await this.rollbackAndTerminateSession();
+    } catch (error) {
+      await this.rollbackAndTerminateSession();
+
+      throw error;
+    }
   }
 }

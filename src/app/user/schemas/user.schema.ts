@@ -47,4 +47,4 @@ export type UserDocument = UserEntity & Document;
 
 export type UserModel = Model<UserDocument>;
 
-export const USER_MODEL_TOKEN = UserEntity.name;
+export const USER_MODEL = UserEntity.name;
