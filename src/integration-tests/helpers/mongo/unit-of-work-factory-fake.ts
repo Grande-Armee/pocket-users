@@ -2,16 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 
-import { UnitOfWork } from '../../../app/mongo/providers/unit-of-work-factory';
-
-class UnitOfWorkFake extends UnitOfWork {
-  // TODO: disable this rule
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public override async commit(): Promise<void> {}
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected override async endSession(): Promise<void> {}
-}
+import { TransactionalCallback, UnitOfWork } from '../../../app/mongo/providers/unit-of-work-factory';
 
 @Injectable()
 export class UnitOfWorkFactoryFake {
@@ -20,6 +11,12 @@ export class UnitOfWorkFactoryFake {
   public async create(): Promise<UnitOfWork> {
     const session = await this.connection.startSession();
 
-    return new UnitOfWorkFake(session);
+    const fake = new UnitOfWork(session);
+
+    jest
+      .spyOn(fake, 'runInTransaction')
+      .mockImplementation(async (callback: TransactionalCallback<unknown>) => callback(session));
+
+    return fake;
   }
 }

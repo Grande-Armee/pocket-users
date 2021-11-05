@@ -16,4 +16,8 @@ export class UserTestFactory {
   public static createRole(): string {
     return 'USER';
   }
+
+  public static createId(): string {
+    return internet.password(12);
+  }
 }

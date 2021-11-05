@@ -1,4 +1,4 @@
-import { EnvVariables, ENV_VARIABLES_TOKEN } from '@grande-armee/pocket-common/dist/common/env/providers/env-variables';
+import { EnvVariables, ENV_VARIABLES } from '@grande-armee/pocket-common';
 import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
 
 import { AppModule } from '../../../app/app.module';
@@ -15,7 +15,7 @@ export class TestModuleHelper {
   }
 
   public overrideEnvVariables(): TestModuleHelper {
-    this.builder = this.builder.overrideProvider(ENV_VARIABLES_TOKEN).useValue({ ...this.getEnvVariables() });
+    this.builder = this.builder.overrideProvider(ENV_VARIABLES).useValue({ ...this.getEnvVariables() });
 
     return this;
   }
