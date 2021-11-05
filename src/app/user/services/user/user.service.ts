@@ -48,6 +48,11 @@ export class UserService {
     const user = await unitOfWork.runInTransaction(async (session) => {
       const { email, password } = userData;
 
+      const existingUser = await this.userRepository.findByEmail(session, email);
+      if (existingUser) {
+        throw new Error(`User with email ${email} already exists`);
+      }
+
       return this.userRepository.createUser(session, {
         email,
         password: await this.hashService.hashPassword(password),

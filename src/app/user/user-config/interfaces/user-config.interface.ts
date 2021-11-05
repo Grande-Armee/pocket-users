@@ -1,9 +1,9 @@
 export interface UserConfig {
-  readonly hashSaltRounds: string;
+  readonly hashSaltRounds: number;
   readonly jwt: JwtConfig;
 }
 
 interface JwtConfig {
-  readonly jwtSecret: string;
-  readonly jwtExpiresIn: number;
+  readonly secret: string;
+  readonly expiresIn: number;
 }

@@ -7,15 +7,15 @@ export const userConfigFactory = async (configService: ConfigService, joi: Joi):
     (envVariables) => ({
       hashSaltRounds: envVariables.AUTH_HASH_SALT_ROUNDS,
       jwt: {
-        jwtSecret: envVariables.AUTH_JWT_SECRET,
-        jwtExpiresIn: envVariables.AUTH_JWT_EXPIRES_IN,
+        secret: envVariables.AUTH_JWT_SECRET,
+        expiresIn: envVariables.AUTH_JWT_EXPIRES_IN,
       },
     }),
     joi.object({
-      hashSaltRounds: joi.string().min(12).max(20).required(),
+      hashSaltRounds: joi.number().min(12).max(20).required(),
       jwt: {
-        jwtSecret: joi.string().min(24).required(),
-        jwtExpiresIn: joi.number().required(),
+        secret: joi.string().min(24).required(),
+        expiresIn: joi.number().required(),
       },
     }),
   );
