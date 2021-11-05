@@ -15,9 +15,7 @@ export class HashService {
 
   public async comparePasswords(plaintextPassword: string, hashedPassword: string): Promise<boolean> {
     try {
-      await this.bcrypt.compare(plaintextPassword, hashedPassword);
-
-      return true;
+      return this.bcrypt.compare(plaintextPassword, hashedPassword);
     } catch {
       return false;
     }

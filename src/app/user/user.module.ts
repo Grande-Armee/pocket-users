@@ -5,13 +5,13 @@ import { UserMapper } from './mappers/user/user.mapper';
 import { bcryptProvider } from './providers/bcrypt';
 import { jwtProvider } from './providers/jwt';
 import { UserRepository } from './repositories/user/user.repository';
-import { UserSchema, USER_MODEL_TOKEN } from './schemas/user.schema';
+import { UserSchema, USER_MODEL } from './schemas/user.schema';
 import { HashService } from './services/hash/hash.service';
 import { TokenService } from './services/token/token.service';
 import { UserService } from './services/user/user.service';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: USER_MODEL_TOKEN, schema: UserSchema }])],
+  imports: [MongooseModule.forFeature([{ name: USER_MODEL, schema: UserSchema }])],
   providers: [UserService, UserRepository, UserMapper, jwtProvider, bcryptProvider, HashService, TokenService],
 })
 export class UserModule {}
