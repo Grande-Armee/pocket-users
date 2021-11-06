@@ -37,6 +37,9 @@ export class TestModuleHelper {
       MONGODB_URI: 'mongodb://pocket:password@mongo:27017/pocket-users',
       RABBITMQ_URI: `amqp://username:password@rabbitmq:5672`,
       APP_NAME: `pocket-users`,
+      AUTH_HASH_SALT_ROUNDS: 15,
+      AUTH_JWT_SECRET: `01234567890123456789012345`,
+      AUTH_JWT_EXPIRES_IN: 86400,
     };
   }
 

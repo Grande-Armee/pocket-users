@@ -42,11 +42,32 @@ export class UserService {
     return accessToken;
   }
 
+  public async setNewPassword(userId: string, newPassword: string): Promise<UserDTO> {
+    const unitOfWork = await this.unitOfWorkFactory.create();
+
+    const user = await unitOfWork.runInTransaction(async (session) => {
+      return this.userRepository.updateUser(session, userId, {
+        password: await this.hashService.hashPassword(newPassword),
+      });
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return user;
+  }
+
   public async createUser(userData: CreateUserData): Promise<UserDTO> {
     const unitOfWork = await this.unitOfWorkFactory.create();
 
     const user = await unitOfWork.runInTransaction(async (session) => {
       const { email, password } = userData;
+
+      const existingUser = await this.userRepository.findByEmail(session, email);
+      if (existingUser) {
+        throw new Error(`User with email ${email} already exists`);
+      }
 
       return this.userRepository.createUser(session, {
         email,
