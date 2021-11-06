@@ -94,7 +94,7 @@ describe('UserService', () => {
     });
   });
 
-  describe('Reset password', () => {
+  describe('Set new password', () => {
     it('should throw if user id not found', async () => {
       expect.assertions(1);
       await mongoHelper.runInTestTransaction(async (session) => {
@@ -102,10 +102,7 @@ describe('UserService', () => {
         const newPassword = UserTestFactory.createPassword();
 
         try {
-          await userService.resetPassowrd({
-            userId,
-            newPassword,
-          });
+          await userService.setNewPassword(userId, newPassword);
         } catch (error) {
           expect(error).toBeTruthy();
         }
@@ -126,10 +123,7 @@ describe('UserService', () => {
           language,
         });
 
-        const userDTO = await userService.resetPassowrd({
-          userId: user.id,
-          newPassword,
-        });
+        const userDTO = await userService.setNewPassword(user.id, newPassword);
 
         expect(await hashService.comparePasswords(newPassword, userDTO.password)).toBeTruthy();
 

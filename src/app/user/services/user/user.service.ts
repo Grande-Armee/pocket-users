@@ -7,7 +7,6 @@ import { HashService } from '../hash/hash.service';
 import { TokenService } from '../token/token.service';
 import { CreateUserData } from './interfaces/create-user-data.interface';
 import { LoginUserData } from './interfaces/login-user-data.interface';
-import { ResetPasswordData } from './interfaces/reset-password-data.interface';
 import { UpdateUserData } from './interfaces/update-user-data.interface';
 
 @Injectable()
@@ -43,10 +42,8 @@ export class UserService {
     return accessToken;
   }
 
-  public async resetPassowrd(resetPassowrdData: ResetPasswordData): Promise<UserDTO> {
+  public async setNewPassword(userId: string, newPassword: string): Promise<UserDTO> {
     const unitOfWork = await this.unitOfWorkFactory.create();
-
-    const { userId, newPassword } = resetPassowrdData;
 
     const user = await unitOfWork.runInTransaction(async (session) => {
       return this.userRepository.updateUser(session, userId, {
