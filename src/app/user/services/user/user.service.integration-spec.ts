@@ -28,60 +28,6 @@ describe('UserService', () => {
     await testingModule.close();
   });
 
-  describe('Create user', () => {
-    it('creates a user in the database', async () => {
-      await mongoHelper.runInTestTransaction(async (session) => {
-        const email = UserTestFactory.createEmail();
-        const password = UserTestFactory.createPassword();
-        const language = UserTestFactory.createLanguage();
-
-        const userDTO = await userService.createUser({
-          email,
-          password,
-          language,
-        });
-
-        expect(userDTO.email).toBe(email);
-        expect(await hashService.comparePasswords(password, userDTO.password)).toBeTruthy();
-        expect(userDTO.language).toBe(language);
-
-        const user = await userRepository.findUserById(session, userDTO.id);
-
-        expect(user).not.toBe(null);
-        expect(await hashService.comparePasswords(password, user!.password)).toBeTruthy();
-        expect(user?.email).toBe(email);
-      });
-    });
-
-    it('should not create new user when user with given email already exists', async () => {
-      await mongoHelper.runInTestTransaction(async (session) => {
-        const email = UserTestFactory.createEmail();
-        const password = UserTestFactory.createPassword();
-        const language = UserTestFactory.createLanguage();
-
-        await userRepository.createUser(session, {
-          email,
-          password,
-          language,
-        });
-
-        try {
-          await userService.createUser({
-            email,
-            password,
-            language,
-          });
-        } catch (error) {
-          expect(error).toBeTruthy();
-        }
-
-        const users = await userRepository.findAll(session);
-
-        expect(users.length).toBe(1);
-      });
-    });
-  });
-
   describe('Log in user', () => {
     it('should not log in user when user with email not found', async () => {
       await mongoHelper.runInTestTransaction(async (session) => {
@@ -144,6 +90,107 @@ describe('UserService', () => {
         });
 
         expect(token).toBeTruthy();
+      });
+    });
+  });
+
+  describe('Reset password', () => {
+    it('should throw if user id not found', async () => {
+      expect.assertions(1);
+      await mongoHelper.runInTestTransaction(async (session) => {
+        const userId = UserTestFactory.createId();
+        const newPassword = UserTestFactory.createPassword();
+
+        try {
+          await userService.resetPassowrd({
+            userId,
+            newPassword,
+          });
+        } catch (error) {
+          expect(error).toBeTruthy();
+        }
+      });
+    });
+
+    it('should change user password when user is found', async () => {
+      await mongoHelper.runInTestTransaction(async (session) => {
+        const email = UserTestFactory.createEmail();
+        const password = UserTestFactory.createPassword();
+        const hashedPassword = await hashService.hashPassword(password);
+        const newPassword = UserTestFactory.createPassword();
+        const language = UserTestFactory.createLanguage();
+
+        const user = await userRepository.createUser(session, {
+          email,
+          password: hashedPassword,
+          language,
+        });
+
+        const userDTO = await userService.resetPassowrd({
+          userId: user.id,
+          newPassword,
+        });
+
+        expect(await hashService.comparePasswords(newPassword, userDTO.password)).toBeTruthy();
+
+        const userInDb = await userRepository.findUserById(session, userDTO.id);
+
+        expect(userInDb).not.toBe(null);
+        expect(await hashService.comparePasswords(newPassword, userInDb!.password)).toBeTruthy();
+      });
+    });
+  });
+
+  describe('Create user', () => {
+    it('creates a user in the database', async () => {
+      await mongoHelper.runInTestTransaction(async (session) => {
+        const email = UserTestFactory.createEmail();
+        const password = UserTestFactory.createPassword();
+        const language = UserTestFactory.createLanguage();
+
+        const userDTO = await userService.createUser({
+          email,
+          password,
+          language,
+        });
+
+        expect(userDTO.email).toBe(email);
+        expect(await hashService.comparePasswords(password, userDTO.password)).toBeTruthy();
+        expect(userDTO.language).toBe(language);
+
+        const user = await userRepository.findUserById(session, userDTO.id);
+
+        expect(user).not.toBe(null);
+        expect(await hashService.comparePasswords(password, user!.password)).toBeTruthy();
+        expect(user?.email).toBe(email);
+      });
+    });
+
+    it('should not create new user when user with given email already exists', async () => {
+      await mongoHelper.runInTestTransaction(async (session) => {
+        const email = UserTestFactory.createEmail();
+        const password = UserTestFactory.createPassword();
+        const language = UserTestFactory.createLanguage();
+
+        await userRepository.createUser(session, {
+          email,
+          password,
+          language,
+        });
+
+        try {
+          await userService.createUser({
+            email,
+            password,
+            language,
+          });
+        } catch (error) {
+          expect(error).toBeTruthy();
+        }
+
+        const users = await userRepository.findAll(session);
+
+        expect(users.length).toBe(1);
       });
     });
   });

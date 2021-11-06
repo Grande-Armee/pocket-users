@@ -17,11 +17,7 @@ export class HashService {
   }
 
   public async comparePasswords(plaintextPassword: string, hashedPassword: string): Promise<boolean> {
-    try {
-      return this.bcrypt.compare(plaintextPassword, hashedPassword);
-    } catch {
-      return false;
-    }
+    return this.bcrypt.compare(plaintextPassword, hashedPassword);
   }
 
   public async generateSalt(): Promise<string> {
