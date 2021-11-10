@@ -2,8 +2,6 @@ import { EnvVariables, ENV_VARIABLES } from '@grande-armee/pocket-common';
 import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
 
 import { AppModule } from '../../../app/app.module';
-import { UnitOfWorkFactory } from '../../../app/mongo/providers/unit-of-work-factory';
-import { UnitOfWorkFactoryFake } from '../mongo/unit-of-work-factory-fake';
 
 export class TestModuleHelper {
   private builder: TestingModuleBuilder;
@@ -16,12 +14,6 @@ export class TestModuleHelper {
 
   public overrideEnvVariables(): TestModuleHelper {
     this.builder = this.builder.overrideProvider(ENV_VARIABLES).useValue({ ...this.getEnvVariables() });
-
-    return this;
-  }
-
-  public overrideUnitOfWork(): TestModuleHelper {
-    this.builder = this.builder.overrideProvider(UnitOfWorkFactory).useClass(UnitOfWorkFactoryFake);
 
     return this;
   }
@@ -48,6 +40,6 @@ export class TestModuleHelper {
   }
 
   public static async createTestingModule(): Promise<TestingModule> {
-    return new TestModuleHelper().overrideEnvVariables().overrideUnitOfWork().init();
+    return new TestModuleHelper().overrideEnvVariables().init();
   }
 }

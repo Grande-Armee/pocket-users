@@ -1,22 +1,21 @@
-import { CommonModule } from '@grande-armee/pocket-common';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { UserMapper } from './mappers/user/user.mapper';
 import { bcryptProvider } from './providers/bcrypt';
 import { jwtProvider } from './providers/jwt';
-import { UserRepository } from './repositories/user/user.repository';
+import { userConfigProvider } from './providers/user-config/user-config.provider';
+import { UserRepositoryFactory } from './repositories/user/user.repository';
 import { UserSchema, USER_MODEL } from './schemas/user.schema';
 import { HashService } from './services/hash/hash.service';
 import { TokenService } from './services/token/token.service';
 import { UserService } from './services/user/user.service';
-import { userConfigProvider } from './user-config/user-config.provider';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: USER_MODEL, schema: UserSchema }]), CommonModule],
+  imports: [MongooseModule.forFeature([{ name: USER_MODEL, schema: UserSchema }])],
   providers: [
     UserService,
-    UserRepository,
+    UserRepositoryFactory,
     UserMapper,
     jwtProvider,
     bcryptProvider,
@@ -24,5 +23,6 @@ import { userConfigProvider } from './user-config/user-config.provider';
     TokenService,
     userConfigProvider,
   ],
+  exports: [UserService],
 })
 export class UserModule {}
