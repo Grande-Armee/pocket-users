@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { TestingModule } from '@nestjs/testing';
 
-import { MongoHelper } from '../../../../integration-tests/helpers/mongo/mongo.helper';
-import { TestModuleHelper } from '../../../../integration-tests/helpers/test-module/test-module.helper';
+import { MongoHelper } from '../../../../../integration-tests/helpers/mongo/mongo.helper';
+import { TestModuleHelper } from '../../../../../integration-tests/helpers/test-module/test-module.helper';
 import { UserRepositoryFactory } from '../../repositories/user/user.repository';
 import { UserTestFactory } from '../../tests-factories/user.factory';
 import { HashService } from '../hash/hash.service';
@@ -146,7 +146,7 @@ describe('UserService', () => {
     });
 
     it('log in user and return access token', async () => {
-      expect.assertions(1);
+      expect.assertions(3);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
         const session = unitOfWork.getSession();

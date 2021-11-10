@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 
-import { RepositoryFactory } from '../../../shared/mongo/interfaces';
-import { ClientSession } from '../../../shared/unit-of-work/providers/unit-of-work-factory';
+import { RepositoryFactory } from '../../../../shared/mongo/interfaces';
+import { ClientSession } from '../../../../shared/unit-of-work/providers/unit-of-work-factory';
 import { UserDTO } from '../../dtos/user.dto';
 import { UserMapper } from '../../mappers/user/user.mapper';
 import { UserEntity, UserModel, USER_MODEL } from '../../schemas/user.schema';

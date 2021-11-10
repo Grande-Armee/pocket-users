@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { UnitOfWork } from '../../../shared/unit-of-work/providers/unit-of-work-factory';
+import { UnitOfWork } from '../../../../shared/unit-of-work/providers/unit-of-work-factory';
 import { UserDTO } from '../../dtos/user.dto';
 import { UserRepositoryFactory } from '../../repositories/user/user.repository';
 import { HashService } from '../hash/hash.service';
@@ -56,6 +56,12 @@ export class UserService {
     const userRepository = this.userRepositoryFactory.create(session);
 
     const { email, password } = userData;
+
+    const existingUser = await userRepository.findOneByEmail(email);
+
+    if (existingUser) {
+      throw new Error(`User with email ${email} already exists`);
+    }
 
     const user = await userRepository.createOne({
       email,

@@ -58,7 +58,7 @@ export class UnitOfWork {
       return result;
     } catch (e) {
       await this.rollback();
-      await this.endSession(); // TODO: ?
+      await this.endSession();
 
       throw e;
     }

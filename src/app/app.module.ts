@@ -1,12 +1,9 @@
-import { CommonModule } from '@grande-armee/pocket-common';
 import { Module } from '@nestjs/common';
 
-import { MongoModule } from './shared/mongo/mongo.module';
-import { UserModule } from './user/user.module';
-
-// TODO: DomainModule
+import { DomainModule } from './domain/domain.module';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
-  imports: [UserModule, CommonModule, MongoModule],
+  imports: [SharedModule, DomainModule],
 })
 export class AppModule {}
