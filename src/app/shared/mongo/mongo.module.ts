@@ -3,18 +3,16 @@ import { Global, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { mongoConfigProvider } from './providers/mongo-config';
-import { unitOfWorkFactoryProvider } from './providers/unit-of-work-factory';
 
 @Global()
 @Module({
   imports: [
-    CommonModule,
+    // CommonModule,
     MongooseModule.forRootAsync({
       imports: [CommonModule],
       ...mongoConfigProvider,
     }),
   ],
-  providers: [unitOfWorkFactoryProvider],
-  exports: [MongooseModule, unitOfWorkFactoryProvider],
+  exports: [MongooseModule],
 })
 export class MongoModule {}

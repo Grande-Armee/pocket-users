@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 
-import { ClientSession } from '../../../mongo/providers/unit-of-work-factory';
+import { RepositoryFactory } from '../../../shared/mongo/interfaces';
+import { ClientSession } from '../../../shared/unit-of-work/providers/unit-of-work-factory';
 import { UserDTO } from '../../dtos/user.dto';
 import { UserMapper } from '../../mappers/user/user.mapper';
 import { UserEntity, UserModel, USER_MODEL } from '../../schemas/user.schema';
@@ -10,18 +11,19 @@ import { UserEntity, UserModel, USER_MODEL } from '../../schemas/user.schema';
 @Injectable()
 export class UserRepository {
   public constructor(
-    @InjectModel(USER_MODEL) private readonly userModel: UserModel,
+    private readonly session: ClientSession,
+    private readonly userModel: UserModel,
     private readonly userMapper: UserMapper,
   ) {}
 
-  public async findUserById(session: ClientSession, userId: string): Promise<UserDTO | null> {
+  public async findOneById(userId: string): Promise<UserDTO | null> {
     const entity = await this.userModel
       .findOne(
         {
           _id: new ObjectId(userId),
         },
         null,
-        { session },
+        { session: this.session },
       )
       .lean();
 
@@ -32,14 +34,14 @@ export class UserRepository {
     return this.userMapper.mapEntityToDTO(entity);
   }
 
-  public async findByEmail(session: ClientSession, email: string): Promise<UserDTO | null> {
+  public async findOneByEmail(email: string): Promise<UserDTO | null> {
     const entity = await this.userModel
       .findOne(
         {
           email: email,
         },
         null,
-        { session },
+        { session: this.session },
       )
       .lean();
 
@@ -50,22 +52,22 @@ export class UserRepository {
     return this.userMapper.mapEntityToDTO(entity);
   }
 
-  public async findAll(session: ClientSession): Promise<UserDTO[]> {
-    const users = await this.userModel.find({}, null, { session }).lean();
+  public async findAll(): Promise<UserDTO[]> {
+    const users = await this.userModel.find({}, null, { session: this.session }).lean();
 
     return users.map((user) => this.userMapper.mapEntityToDTO(user));
   }
 
-  public async createUser(session: ClientSession, userData: Partial<UserEntity>): Promise<UserDTO> {
+  public async createOne(userData: Partial<UserEntity>): Promise<UserDTO> {
     const entity = new this.userModel({ ...userData });
 
-    await entity.save({ session });
+    await entity.save({ session: this.session });
 
     return this.userMapper.mapEntityToDTO(entity);
   }
 
-  public async removeUser(session: ClientSession, userId: string): Promise<void> {
-    const user = await this.findUserById(session, userId);
+  public async removeOne(userId: string): Promise<void> {
+    const user = await this.findOneById(userId);
 
     if (!user) {
       throw new Error('User not found');
@@ -75,16 +77,12 @@ export class UserRepository {
       {
         _id: new ObjectId(userId),
       },
-      { session },
+      { session: this.session },
     );
   }
 
-  public async updateUser(
-    session: ClientSession,
-    userId: string,
-    userData: Partial<UserEntity>,
-  ): Promise<UserDTO | null> {
-    const user = await this.findUserById(session, userId);
+  public async updateOne(userId: string, userData: Partial<UserEntity>): Promise<UserDTO> {
+    const user = await this.findOneById(userId);
 
     if (!user) {
       throw new Error('User not found');
@@ -97,9 +95,21 @@ export class UserRepository {
       {
         ...userData,
       },
-      { session },
+      { session: this.session },
     );
 
-    return this.findUserById(session, userId);
+    return this.findOneById(userId) as Promise<UserDTO>;
+  }
+}
+
+@Injectable()
+export class UserRepositoryFactory implements RepositoryFactory<UserRepository> {
+  public constructor(
+    @InjectModel(USER_MODEL) private readonly userModel: UserModel,
+    private readonly userMapper: UserMapper,
+  ) {}
+
+  public create(session: ClientSession): UserRepository {
+    return new UserRepository(session, this.userModel, this.userMapper);
   }
 }

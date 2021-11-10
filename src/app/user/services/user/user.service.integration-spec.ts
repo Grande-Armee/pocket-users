@@ -1,26 +1,30 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { TestingModule } from '@nestjs/testing';
 
 import { MongoHelper } from '../../../../integration-tests/helpers/mongo/mongo.helper';
 import { TestModuleHelper } from '../../../../integration-tests/helpers/test-module/test-module.helper';
-import { UserRepository } from '../../repositories/user/user.repository';
+import { UserRepositoryFactory } from '../../repositories/user/user.repository';
 import { UserTestFactory } from '../../tests-factories/user.factory';
 import { HashService } from '../hash/hash.service';
+import { TokenService } from '../token/token.service';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
   let testingModule: TestingModule;
   let mongoHelper: MongoHelper;
-  let hashService: HashService;
 
   let userService: UserService;
-  let userRepository: UserRepository;
+  let userRepositoryFactory: UserRepositoryFactory;
+  let tokenService: TokenService;
+  let hashService: HashService;
 
   beforeEach(async () => {
     testingModule = await TestModuleHelper.createTestingModule();
     mongoHelper = new MongoHelper(testingModule);
 
     userService = testingModule.get(UserService);
-    userRepository = testingModule.get(UserRepository);
+    userRepositoryFactory = testingModule.get(UserRepositoryFactory);
+    tokenService = testingModule.get(TokenService);
     hashService = testingModule.get(HashService);
   });
 
@@ -30,12 +34,17 @@ describe('UserService', () => {
 
   describe('Create user', () => {
     it('creates a user in the database', async () => {
-      await mongoHelper.runInTestTransaction(async (session) => {
+      expect.assertions(6);
+
+      await mongoHelper.runInTestTransaction(async (unitOfWork) => {
+        const session = unitOfWork.getSession();
+        const userRepository = userRepositoryFactory.create(session);
+
         const email = UserTestFactory.createEmail();
         const password = UserTestFactory.createPassword();
         const language = UserTestFactory.createLanguage();
 
-        const userDTO = await userService.createUser({
+        const userDTO = await userService.createUser(unitOfWork, {
           email,
           password,
           language,
@@ -45,7 +54,7 @@ describe('UserService', () => {
         expect(await hashService.comparePasswords(password, userDTO.password)).toBeTruthy();
         expect(userDTO.language).toBe(language);
 
-        const user = await userRepository.findUserById(session, userDTO.id);
+        const user = await userRepository.findOneById(userDTO.id);
 
         expect(user).not.toBe(null);
         expect(await hashService.comparePasswords(password, user!.password)).toBeTruthy();
@@ -53,20 +62,25 @@ describe('UserService', () => {
       });
     });
 
-    it.skip('should not create new user when user with given email already exists', async () => {
-      await mongoHelper.runInTestTransaction(async (session) => {
+    it('should not create new user when user with given email already exists', async () => {
+      expect.assertions(2);
+
+      await mongoHelper.runInTestTransaction(async (unitOfWork) => {
+        const session = unitOfWork.getSession();
+        const userRepository = userRepositoryFactory.create(session);
+
         const email = UserTestFactory.createEmail();
         const password = UserTestFactory.createPassword();
         const language = UserTestFactory.createLanguage();
 
-        await userRepository.createUser(session, {
+        await userRepository.createOne({
           email,
           password,
           language,
         });
 
         try {
-          await userService.createUser({
+          await userService.createUser(unitOfWork, {
             email,
             password,
             language,
@@ -75,7 +89,7 @@ describe('UserService', () => {
           expect(error).toBeTruthy();
         }
 
-        const users = await userRepository.findAll(session);
+        const users = await userRepository.findAll();
 
         expect(users.length).toBe(1);
       });
@@ -84,12 +98,14 @@ describe('UserService', () => {
 
   describe('Log in user', () => {
     it('should not log in user when user with email not found', async () => {
-      await mongoHelper.runInTestTransaction(async (session) => {
+      expect.assertions(1);
+
+      await mongoHelper.runInTestTransaction(async (unitOfWork) => {
         const email = UserTestFactory.createEmail();
         const password = UserTestFactory.createPassword();
 
         try {
-          await userService.loginUser({
+          await userService.loginUser(unitOfWork, {
             email,
             password,
           });
@@ -102,21 +118,24 @@ describe('UserService', () => {
     it('should not log in user when user password does not match', async () => {
       expect.assertions(1);
 
-      await mongoHelper.runInTestTransaction(async (session) => {
+      await mongoHelper.runInTestTransaction(async (unitOfWork) => {
+        const session = unitOfWork.getSession();
+        const userRepository = userRepositoryFactory.create(session);
+
         const email = UserTestFactory.createEmail();
         const password = UserTestFactory.createPassword();
         const hashedPassword = await hashService.hashPassword(password);
         const invalidPassword = UserTestFactory.createPassword();
         const language = UserTestFactory.createLanguage();
 
-        await userRepository.createUser(session, {
+        await userRepository.createOne({
           email,
           password: hashedPassword,
           language,
         });
 
         try {
-          await userService.loginUser({
+          await userService.loginUser(unitOfWork, {
             email,
             password: invalidPassword,
           });
@@ -127,42 +146,104 @@ describe('UserService', () => {
     });
 
     it('log in user and return access token', async () => {
-      await mongoHelper.runInTestTransaction(async (session) => {
+      expect.assertions(1);
+
+      await mongoHelper.runInTestTransaction(async (unitOfWork) => {
+        const session = unitOfWork.getSession();
+        const userRepository = userRepositoryFactory.create(session);
+
         const email = UserTestFactory.createEmail();
         const password = UserTestFactory.createPassword();
         const hashedPassword = await hashService.hashPassword(password);
         const language = UserTestFactory.createLanguage();
 
-        await userRepository.createUser(session, {
+        const user = await userRepository.createOne({
           email,
           password: hashedPassword,
           language,
         });
 
-        const token = await userService.loginUser({
+        const token = await userService.loginUser(unitOfWork, {
           email,
           password,
         });
 
-        expect(token).toBeTruthy();
+        expect(typeof token).toBe('string');
+
+        const tokenPayload = await tokenService.verifyAccessToken<Record<string, string>>(token);
+
+        expect(tokenPayload.id).toBe(user.id);
+        expect(tokenPayload.role).toBe(user.role);
+      });
+    });
+  });
+
+  describe('Set new password', () => {
+    it('should throw if user id not found', async () => {
+      expect.assertions(1);
+
+      await mongoHelper.runInTestTransaction(async (unitOfWork) => {
+        const userId = UserTestFactory.createId();
+        const newPassword = UserTestFactory.createPassword();
+
+        try {
+          await userService.setNewPassword(unitOfWork, userId, newPassword);
+        } catch (error) {
+          expect(error).toBeTruthy();
+        }
+      });
+    });
+
+    it('should change user password when user is found', async () => {
+      expect.assertions(3);
+
+      await mongoHelper.runInTestTransaction(async (unitOfWork) => {
+        const session = unitOfWork.getSession();
+        const userRepository = userRepositoryFactory.create(session);
+
+        const email = UserTestFactory.createEmail();
+        const password = UserTestFactory.createPassword();
+        const hashedPassword = await hashService.hashPassword(password);
+        const newPassword = UserTestFactory.createPassword();
+        const language = UserTestFactory.createLanguage();
+
+        const user = await userRepository.createOne({
+          email,
+          password: hashedPassword,
+          language,
+        });
+
+        const userDTO = await userService.setNewPassword(unitOfWork, user.id, newPassword);
+
+        expect(await hashService.comparePasswords(newPassword, userDTO.password)).toBe(true);
+
+        const userInDb = await userRepository.findOneById(userDTO.id);
+
+        expect(userInDb).not.toBe(null);
+        expect(await hashService.comparePasswords(newPassword, userInDb!.password)).toBe(true);
       });
     });
   });
 
   describe('Find user', () => {
     it('finds a user in the database', async () => {
-      await mongoHelper.runInTestTransaction(async (session) => {
+      expect.assertions(1);
+
+      await mongoHelper.runInTestTransaction(async (unitOfWork) => {
+        const session = unitOfWork.getSession();
+        const userRepository = userRepositoryFactory.create(session);
+
         const email = UserTestFactory.createEmail();
         const password = UserTestFactory.createPassword();
 
         /* Create the user using a tested interface */
-        const userDTO = await userRepository.createUser(session, {
+        const userDTO = await userRepository.createOne({
           email,
           password,
         });
 
         /* Find user using the interface under test */
-        const user = await userService.findUser(userDTO.id);
+        const user = await userService.findUser(unitOfWork, userDTO.id);
 
         expect(user).not.toBe(null);
       });
@@ -170,12 +251,13 @@ describe('UserService', () => {
 
     it('attempts to find a non-existent user', async () => {
       expect.assertions(1);
-      await mongoHelper.runInTestTransaction(async () => {
+
+      await mongoHelper.runInTestTransaction(async (unitOfWork) => {
         const userId = UserTestFactory.createId();
 
         /* Try finding user using the interface under test */
         try {
-          await userService.findUser(userId);
+          await userService.findUser(unitOfWork, userId);
         } catch (e: any) {
           expect(e.message).toBe('User not found');
         }
@@ -185,37 +267,44 @@ describe('UserService', () => {
 
   describe('Update user', () => {
     it('updates user data in the database', async () => {
-      await mongoHelper.runInTestTransaction(async (session) => {
+      expect.assertions(1);
+
+      await mongoHelper.runInTestTransaction(async (unitOfWork) => {
+        const session = unitOfWork.getSession();
+        const userRepository = userRepositoryFactory.create(session);
+
         const email = UserTestFactory.createEmail();
         const password = UserTestFactory.createPassword();
         const originalLanguage = 'en';
         const newLanguage = 'pl';
 
         /* Create the user using a tested interface */
-        const userDTO = await userRepository.createUser(session, {
+        const userDTO = await userRepository.createOne({
           email,
           password,
           language: originalLanguage,
         });
 
         /* Update the user data using the interface under test */
-        await userService.updateUser(userDTO.id, { language: newLanguage });
+        await userService.updateUser(unitOfWork, userDTO.id, { language: newLanguage });
 
         /* Assert user data successfully updated */
-        const user = await userRepository.findUserById(session, userDTO.id);
+        const user = await userRepository.findOneById(userDTO.id);
+
         expect(user?.language).toBe(newLanguage);
       });
     });
 
     it('tries updating non-existent user', async () => {
       expect.assertions(1);
-      await mongoHelper.runInTestTransaction(async () => {
+
+      await mongoHelper.runInTestTransaction(async (unitOfWork) => {
         const userId = UserTestFactory.createId();
         const language = UserTestFactory.createLanguage();
 
         /* Try updating the user data using the interface under test */
         try {
-          await userService.updateUser(userId, { language });
+          await userService.updateUser(unitOfWork, userId, { language });
         } catch (e: any) {
           expect(e.message).toBe('User not found');
         }
@@ -225,33 +314,40 @@ describe('UserService', () => {
 
   describe('Remove user', () => {
     it('removes a user from the databse', async () => {
-      await mongoHelper.runInTestTransaction(async (session) => {
+      expect.assertions(1);
+
+      await mongoHelper.runInTestTransaction(async (unitOfWork) => {
+        const session = unitOfWork.getSession();
+        const userRepository = userRepositoryFactory.create(session);
+
         const email = UserTestFactory.createEmail();
         const password = UserTestFactory.createPassword();
 
         /* Create the user using a tested interface */
-        const userDTO = await userRepository.createUser(session, {
+        const userDTO = await userRepository.createOne({
           email,
           password,
         });
 
         /* Remove the user using the interface under test */
-        await userService.removeUser(userDTO.id);
+        await userService.removeUser(unitOfWork, userDTO.id);
 
         /* Assert user is no longer in the database */
-        const user = await userRepository.findUserById(session, userDTO.id);
+        const user = await userRepository.findOneById(userDTO.id);
+
         expect(user).toBe(null);
       });
     });
 
     it('tries removing a user not in the databse', async () => {
       expect.assertions(1);
-      await mongoHelper.runInTestTransaction(async () => {
+
+      await mongoHelper.runInTestTransaction(async (unitOfWork) => {
         const userId = UserTestFactory.createId();
 
         /* Try removing the user using the interface under test */
         try {
-          await userService.removeUser(userId);
+          await userService.removeUser(unitOfWork, userId);
         } catch (e: any) {
           expect(e.message).toBe('User not found');
         }
