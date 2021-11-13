@@ -2,7 +2,7 @@ import { LoggerService } from '@grande-armee/pocket-common';
 import { NestFactory } from '@nestjs/core';
 import { Transport } from '@nestjs/microservices';
 
-import { AppModule } from './app/app.module';
+import { AppModule } from './app/appModule';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.createMicroservice(AppModule, {

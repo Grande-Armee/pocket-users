@@ -1,1 +1,1 @@
-export * from './repository-factory.interface';
+export * from './repositoryFactory';
