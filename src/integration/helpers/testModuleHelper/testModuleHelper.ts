@@ -1,7 +1,7 @@
 import { EnvVariables, ENV_VARIABLES } from '@grande-armee/pocket-common';
 import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
 
-import { AppModule } from '../../../app/appModule';
+import { AppModule } from '@src/app/appModule';
 
 export class TestModuleHelper {
   private builder: TestingModuleBuilder;

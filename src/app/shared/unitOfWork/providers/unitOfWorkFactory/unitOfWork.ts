@@ -1,6 +1,7 @@
 import { LoggerService } from '@nestjs/common';
 
-import { DomainEventsDispatcher } from '../../../domainEventsDispatcher/providers/domainEventsDispatcherFactory';
+import { DomainEventsDispatcher } from '@shared/domainEventsDispatcher/providers/domainEventsDispatcherFactory';
+
 import { ClientSession } from './interfaces';
 
 export type TransactionalCallback<Result> = (unitOfWork: UnitOfWork) => Promise<Result>;

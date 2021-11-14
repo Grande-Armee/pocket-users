@@ -3,7 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 
-import { DomainEventsDispatcherFactory } from '../../../domainEventsDispatcher/providers/domainEventsDispatcherFactory';
+import { DomainEventsDispatcherFactory } from '@shared/domainEventsDispatcher/providers/domainEventsDispatcherFactory';
+
 import { UnitOfWork } from './unitOfWork';
 
 @Injectable()

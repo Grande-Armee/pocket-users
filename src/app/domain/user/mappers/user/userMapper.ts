@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
 import { UserDTO } from '../../dtos/userDTO';
-import { UserEntity } from '../../schemas/userSchema';
+import { User } from '../../schemas/user';
 
 @Injectable()
 export class UserMapper {
-  public mapEntityToDTO(entity: UserEntity): UserDTO {
+  public mapEntityToDTO(entity: User): UserDTO {
     return UserDTO.create({
       id: entity._id.toString(),
       createdAt: entity.createdAt,

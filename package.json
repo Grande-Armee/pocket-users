@@ -28,7 +28,7 @@
     "test:integration:cov": "npm run test:integration -- --coverage"
   },
   "dependencies": {
-    "@grande-armee/pocket-common": "^1.1.0",
+    "@grande-armee/pocket-common": "^1.2.0",
     "@nestjs/common": "^8.2.0",
     "@nestjs/core": "^8.2.0",
     "@nestjs/microservices": "^8.2.0",
@@ -40,6 +40,7 @@
     "class-validator": "^0.13.1",
     "faker": "^5.5.3",
     "jsonwebtoken": "^8.5.1",
+    "module-alias": "^2.2.2",
     "mongodb": "^4.1.4",
     "mongoose": "^6.0.12",
     "reflect-metadata": "^0.1.13",
@@ -50,7 +51,7 @@
   "devDependencies": {
     "@commitlint/cli": "^14.1.0",
     "@commitlint/config-conventional": "^14.1.0",
-    "@grande-armee/pocket-style-guide": "^1.1.0",
+    "@grande-armee/pocket-style-guide": "^2.0.0",
     "@nestjs/cli": "^8.1.4",
     "@nestjs/schematics": "^8.0.4",
     "@nestjs/testing": "^8.2.0",
@@ -58,6 +59,7 @@
     "@types/faker": "^5.5.9",
     "@types/jest": "^27.0.2",
     "@types/jsonwebtoken": "^8.5.5",
+    "@types/module-alias": "^2.0.1",
     "@types/node": "^16.11.7",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
