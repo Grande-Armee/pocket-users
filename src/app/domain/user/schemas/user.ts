@@ -1,43 +1,57 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Model } from 'mongoose';
+import { Document, Model, SchemaTypes } from 'mongoose';
+import { v4 } from 'uuid';
 
 @Schema({
   timestamps: true,
   collection: 'users',
 })
 export class User {
+  @Prop({
+    default: v4,
+    type: SchemaTypes.String,
+  })
   public _id: string;
 
   @Prop({
     required: true,
     unique: true,
+    type: SchemaTypes.String,
   })
   public email: string;
 
   @Prop({
     required: true,
+    type: SchemaTypes.String,
   })
   public password: string;
 
   @Prop({
     default: false,
+    type: SchemaTypes.Boolean,
   })
   public isActive: boolean;
 
   @Prop({
     default: 'USER',
+    type: SchemaTypes.String,
   })
   public role: string;
 
   @Prop({
     default: 'en',
+    type: SchemaTypes.String,
   })
   public language: string;
 
-  @Prop()
+  @Prop({
+    type: SchemaTypes.Date,
+  })
   public createdAt: Date;
 
-  @Prop()
+  @Prop({
+    type: SchemaTypes.Date,
+  })
   public updatedAt: Date;
 }
 

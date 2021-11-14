@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ObjectId } from 'mongodb';
 
 import { RepositoryFactory } from '@shared/mongo/interfaces';
 import { ClientSession } from '@shared/unitOfWork/providers/unitOfWorkFactory';
@@ -21,7 +20,7 @@ export class UserRepository {
     const entity = await this.userModel
       .findOne(
         {
-          _id: new ObjectId(userId),
+          _id: userId,
         },
         null,
         { session: this.session },
@@ -76,7 +75,7 @@ export class UserRepository {
 
     await this.userModel.deleteOne(
       {
-        _id: new ObjectId(userId),
+        _id: userId,
       },
       { session: this.session },
     );
@@ -91,7 +90,7 @@ export class UserRepository {
 
     await this.userModel.updateOne(
       {
-        _id: new ObjectId(userId),
+        _id: userId,
       },
       {
         ...userData,
