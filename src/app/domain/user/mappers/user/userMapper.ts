@@ -7,7 +7,7 @@ import { User } from '../../schemas/user';
 export class UserMapper {
   public mapEntityToDTO(entity: User): UserDTO {
     return UserDTO.create({
-      id: entity._id.toString(),
+      id: entity._id,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
       email: entity.email,
