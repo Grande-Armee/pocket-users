@@ -1,8 +1,14 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable */
 const { join } = require('path');
+const { pathsToModuleNameMapper } = require('ts-jest/utils');
+
+const { compilerOptions } = require('./tsconfig.json');
 
 module.exports = {
-  rootDir: 'src/app',
+  rootDir: '.',
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
+    prefix: '<rootDir>/',
+  }),
   coverageDirectory: join(__dirname, 'coverage'),
   globals: {
     'ts-jest': {

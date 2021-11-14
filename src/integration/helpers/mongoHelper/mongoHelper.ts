@@ -1,6 +1,6 @@
 import { TestingModule } from '@nestjs/testing';
 
-import { TransactionalCallback, UnitOfWorkFactory } from '../../../app/shared/unitOfWork/providers/unitOfWorkFactory';
+import { TransactionalCallback, UnitOfWorkFactory } from '@shared/unitOfWork/providers/unitOfWorkFactory';
 
 export class MongoHelper {
   public constructor(private readonly testingModule: TestingModule) {}

@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 
-import { RepositoryFactory } from '../../../../shared/mongo/interfaces';
-import { ClientSession } from '../../../../shared/unitOfWork/providers/unitOfWorkFactory';
+import { RepositoryFactory } from '@shared/mongo/interfaces';
+import { ClientSession } from '@shared/unitOfWork/providers/unitOfWorkFactory';
+
 import { UserDTO } from '../../dtos/userDTO';
-import { UserMapper } from '../../mappers/userMapper/userMapper';
-import { UserEntity, UserModel, USER_MODEL } from '../../schemas/userSchema';
+import { UserMapper } from '../../mappers/user/userMapper';
+import { User, UserModel, USER_MODEL } from '../../schemas/user';
 
 @Injectable()
 export class UserRepository {
@@ -58,7 +59,7 @@ export class UserRepository {
     return users.map((user) => this.userMapper.mapEntityToDTO(user));
   }
 
-  public async createOne(userData: Partial<UserEntity>): Promise<UserDTO> {
+  public async createOne(userData: Partial<User>): Promise<UserDTO> {
     const entity = new this.userModel({ ...userData });
 
     await entity.save({ session: this.session });
@@ -81,7 +82,7 @@ export class UserRepository {
     );
   }
 
-  public async updateOne(userId: string, userData: Partial<UserEntity>): Promise<UserDTO> {
+  public async updateOne(userId: string, userData: Partial<User>): Promise<UserDTO> {
     const user = await this.findOneById(userId);
 
     if (!user) {

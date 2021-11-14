@@ -1,3 +1,4 @@
-module.exports = {
-  ...require('@grande-armee/pocket-style-guide/commitlint'),
-};
+/* eslint-disable */
+const { createConfig } = require('@grande-armee/pocket-style-guide/commitlint');
+
+module.exports = createConfig();

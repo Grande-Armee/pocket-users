@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-import { UnitOfWork } from '../../../../shared/unitOfWork/providers/unitOfWorkFactory';
+import { UnitOfWork } from '@shared/unitOfWork/providers/unitOfWorkFactory';
+
 import { UserDTO } from '../../dtos/userDTO';
-import { UserRepositoryFactory } from '../../repositories/userRepository/userRepository';
-import { HashService } from '../hashService/hashService';
-import { TokenService } from '../tokenService/tokenService';
+import { UserRepositoryFactory } from '../../repositories/user/userRepository';
+import { HashService } from '../hash/hashService';
+import { TokenService } from '../token/tokenService';
 import { LoginUserData, CreateUserData, UpdateUserData } from './interfaces';
 
 @Injectable()
@@ -33,7 +34,10 @@ export class UserService {
       throw new Error('Invalid email or password');
     }
 
-    const accessToken = await this.tokenService.signAccessToken({ id: user.id, role: user.role });
+    const accessToken = await this.tokenService.signAccessToken({
+      id: user.id,
+      role: user.role,
+    });
 
     return accessToken;
   }

@@ -1,12 +1,13 @@
 import { TestingModule } from '@nestjs/testing';
 
-import { MongoHelper } from '../../../../../integration/helpers/mongoHelper/mongoHelper';
-import { TestModuleHelper } from '../../../../../integration/helpers/testModuleHelper/testModuleHelper';
+import { MongoHelper } from '@integration/helpers/mongoHelper/mongoHelper';
+import { TestModuleHelper } from '@integration/helpers/testModuleHelper/testModuleHelper';
+
 import { UserDTO } from '../../dtos/userDTO';
-import { UserRepositoryFactory } from '../../repositories/userRepository/userRepository';
+import { UserRepositoryFactory } from '../../repositories/user/userRepository';
 import { UserTestFactory } from '../../testsFactories/userTestFactory';
-import { HashService } from '../hashService/hashService';
-import { TokenService } from '../tokenService/tokenService';
+import { HashService } from '../hash/hashService';
+import { TokenService } from '../token/tokenService';
 import { UserService } from './userService';
 
 describe('UserService', () => {
@@ -56,7 +57,7 @@ describe('UserService', () => {
 
         const user = (await userRepository.findOneById(userDTO.id)) as UserDTO;
 
-        expect(user).not.toBe(null);
+        expect(user).not.toBeNull();
         expect(await hashService.comparePasswords(password, user.password)).toBeTruthy();
         expect(user?.email).toBe(email);
       });
@@ -91,7 +92,7 @@ describe('UserService', () => {
 
         const users = await userRepository.findAll();
 
-        expect(users.length).toBe(1);
+        expect(users).toHaveLength(1);
       });
     });
   });
@@ -219,7 +220,7 @@ describe('UserService', () => {
 
         const userInDb = (await userRepository.findOneById(userDTO.id)) as UserDTO;
 
-        expect(userInDb).not.toBe(null);
+        expect(userInDb).not.toBeNull();
         expect(await hashService.comparePasswords(newPassword, userInDb.password)).toBe(true);
       });
     });
@@ -245,7 +246,7 @@ describe('UserService', () => {
         /* Find user using the interface under test */
         const user = await userService.findUser(unitOfWork, userDTO.id);
 
-        expect(user).not.toBe(null);
+        expect(user).not.toBeNull();
       });
     });
 
@@ -286,7 +287,9 @@ describe('UserService', () => {
         });
 
         /* Update the user data using the interface under test */
-        await userService.updateUser(unitOfWork, userDTO.id, { language: newLanguage });
+        await userService.updateUser(unitOfWork, userDTO.id, {
+          language: newLanguage,
+        });
 
         /* Assert user data successfully updated */
         const user = await userRepository.findOneById(userDTO.id);
@@ -335,7 +338,7 @@ describe('UserService', () => {
         /* Assert user is no longer in the database */
         const user = await userRepository.findOneById(userDTO.id);
 
-        expect(user).toBe(null);
+        expect(user).toBeNull();
       });
     });
 

@@ -1,3 +1,5 @@
+import './pathAliases';
+
 import { LoggerService } from '@grande-armee/pocket-common';
 import { NestFactory } from '@nestjs/core';
 import { Transport } from '@nestjs/microservices';

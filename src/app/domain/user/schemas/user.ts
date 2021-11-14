@@ -5,7 +5,7 @@ import { Document, Model } from 'mongoose';
   timestamps: true,
   collection: 'users',
 })
-export class UserEntity {
+export class User {
   public _id: string;
 
   @Prop({
@@ -41,10 +41,10 @@ export class UserEntity {
   public updatedAt: Date;
 }
 
-export const UserSchema = SchemaFactory.createForClass(UserEntity);
+export const UserSchema = SchemaFactory.createForClass(User);
 
-export type UserDocument = UserEntity & Document;
+export type UserDocument = User & Document;
 
 export type UserModel = Model<UserDocument>;
 
-export const USER_MODEL = UserEntity.name;
+export const USER_MODEL = User.name;
