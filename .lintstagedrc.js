@@ -1,3 +1,3 @@
 module.exports = {
-  '*.{js,ts}': ['eslint --fix', 'prettier --write'],
+  '*.ts': ['npm run lint:fix -- --max-warnings=0 -- ', 'npm run format:fix -- ', 'npm run build'],
 };
