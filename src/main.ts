@@ -12,7 +12,6 @@ async function bootstrap(): Promise<void> {
     },
     bufferLogs: true,
   });
-  
 
   app.useLogger(app.get(LoggerService));
   app.flushLogs();
