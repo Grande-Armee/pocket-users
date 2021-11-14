@@ -27,10 +27,10 @@ export class UserService {
       throw new Error('invalid email or password');
     }
 
-    const passwordValid = await this.hashService.comparePasswords(password, user.password);
+    const isPasswordValid = await this.hashService.comparePasswords(password, user.password);
 
-    if (!passwordValid) {
-      throw new Error('invalid email or password');
+    if (!isPasswordValid) {
+      throw new Error('Invalid email or password');
     }
 
     const accessToken = await this.tokenService.signAccessToken({ id: user.id, role: user.role });

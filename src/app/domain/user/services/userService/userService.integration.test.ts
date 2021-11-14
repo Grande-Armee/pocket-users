@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { TestingModule } from '@nestjs/testing';
 
 import { MongoHelper } from '../../../../../integration/helpers/mongoHelper/mongoHelper';
 import { TestModuleHelper } from '../../../../../integration/helpers/testModuleHelper/testModuleHelper';
+import { UserDTO } from '../../dtos/userDTO';
 import { UserRepositoryFactory } from '../../repositories/userRepository/userRepository';
 import { UserTestFactory } from '../../testsFactories/userTestFactory';
 import { HashService } from '../hashService/hashService';
@@ -54,10 +54,10 @@ describe('UserService', () => {
         expect(await hashService.comparePasswords(password, userDTO.password)).toBeTruthy();
         expect(userDTO.language).toBe(language);
 
-        const user = await userRepository.findOneById(userDTO.id);
+        const user = (await userRepository.findOneById(userDTO.id)) as UserDTO;
 
         expect(user).not.toBe(null);
-        expect(await hashService.comparePasswords(password, user!.password)).toBeTruthy();
+        expect(await hashService.comparePasswords(password, user.password)).toBeTruthy();
         expect(user?.email).toBe(email);
       });
     });
@@ -217,10 +217,10 @@ describe('UserService', () => {
 
         expect(await hashService.comparePasswords(newPassword, userDTO.password)).toBe(true);
 
-        const userInDb = await userRepository.findOneById(userDTO.id);
+        const userInDb = (await userRepository.findOneById(userDTO.id)) as UserDTO;
 
         expect(userInDb).not.toBe(null);
-        expect(await hashService.comparePasswords(newPassword, userInDb!.password)).toBe(true);
+        expect(await hashService.comparePasswords(newPassword, userInDb.password)).toBe(true);
       });
     });
   });

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const baseConfig = require('./jest.config');
+const baseConfig = require('./tests-base.config');
 
 module.exports = {
   ...baseConfig,
-  testRegex: '.integration-spec.ts$',
+  testRegex: '.unit.test.ts$',
 };

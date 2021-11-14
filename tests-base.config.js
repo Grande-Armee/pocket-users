@@ -3,7 +3,6 @@ const { join } = require('path');
 
 module.exports = {
   rootDir: 'src/app',
-  testRegex: '.spec.ts$',
   coverageDirectory: join(__dirname, 'coverage'),
   globals: {
     'ts-jest': {
