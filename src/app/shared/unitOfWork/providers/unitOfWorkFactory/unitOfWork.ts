@@ -1,4 +1,4 @@
-import { LoggerService } from '@nestjs/common';
+import { LoggerService } from '@grande-armee/pocket-common';
 
 import { DomainEventsDispatcher } from '@shared/domainEventsDispatcher/providers/domainEventsDispatcherFactory';
 
@@ -8,7 +8,7 @@ export type TransactionalCallback<Result> = (unitOfWork: UnitOfWork) => Promise<
 
 export class UnitOfWork {
   public constructor(
-    private readonly loggerService: LoggerService,
+    private readonly logger: LoggerService,
     private readonly session: ClientSession,
     private readonly domainEventsDispatcher: DomainEventsDispatcher,
   ) {}
@@ -18,25 +18,25 @@ export class UnitOfWork {
   }
 
   public async init(): Promise<void> {
-    this.loggerService.log('Starting transaction...');
+    this.logger.debug('Starting transaction...');
     this.session.startTransaction();
-    this.loggerService.log('Transaction started.');
+    this.logger.debug('Transaction started.');
   }
 
   public async commit(): Promise<void> {
-    this.loggerService.log('Commiting transaction...');
+    this.logger.debug('Commiting transaction...');
     await this.session.commitTransaction();
-    this.loggerService.log('Transaction commited.');
+    this.logger.debug('Transaction commited.');
 
-    this.loggerService.log('Dispatching domain events...');
+    this.logger.debug('Dispatching domain events...');
     await this.domainEventsDispatcher.dispatch();
-    this.loggerService.log('Domain events dispached.');
+    this.logger.debug('Domain events dispached.');
   }
 
   public async rollback(): Promise<void> {
-    this.loggerService.log('Rolling back transaction...');
+    this.logger.debug('Rolling back transaction...');
     await this.session.abortTransaction();
-    this.loggerService.log('Transaction rolled back.');
+    this.logger.debug('Transaction rolled back.');
   }
 
   public getSession(): ClientSession {

@@ -4,9 +4,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { RepositoryFactory } from '@shared/mongo/interfaces';
 import { ClientSession } from '@shared/unitOfWork/providers/unitOfWorkFactory';
 
-import { UserDTO } from '../../dtos/userDTO';
+import { UserDto } from '../../dtos/userDto';
+import { User, UserModel, USER_MODEL } from '../../entities/user';
 import { UserMapper } from '../../mappers/user/userMapper';
-import { User, UserModel, USER_MODEL } from '../../schemas/user';
 
 @Injectable()
 export class UserRepository {
@@ -16,7 +16,7 @@ export class UserRepository {
     private readonly userMapper: UserMapper,
   ) {}
 
-  public async findOneById(userId: string): Promise<UserDTO | null> {
+  public async findOneById(userId: string): Promise<UserDto | null> {
     const entity = await this.userModel
       .findOne(
         {
@@ -31,10 +31,10 @@ export class UserRepository {
       return null;
     }
 
-    return this.userMapper.mapEntityToDTO(entity);
+    return this.userMapper.mapEntityToDto(entity);
   }
 
-  public async findOneByEmail(email: string): Promise<UserDTO | null> {
+  public async findOneByEmail(email: string): Promise<UserDto | null> {
     const entity = await this.userModel
       .findOne(
         {
@@ -49,21 +49,21 @@ export class UserRepository {
       return null;
     }
 
-    return this.userMapper.mapEntityToDTO(entity);
+    return this.userMapper.mapEntityToDto(entity);
   }
 
-  public async findAll(): Promise<UserDTO[]> {
+  public async findAll(): Promise<UserDto[]> {
     const users = await this.userModel.find({}, null, { session: this.session }).lean();
 
-    return users.map((user) => this.userMapper.mapEntityToDTO(user));
+    return users.map((user) => this.userMapper.mapEntityToDto(user));
   }
 
-  public async createOne(userData: Partial<User>): Promise<UserDTO> {
+  public async createOne(userData: Partial<User>): Promise<UserDto> {
     const entity = new this.userModel({ ...userData });
 
     await entity.save({ session: this.session });
 
-    return this.userMapper.mapEntityToDTO(entity);
+    return this.userMapper.mapEntityToDto(entity);
   }
 
   public async removeOne(userId: string): Promise<void> {
@@ -81,7 +81,7 @@ export class UserRepository {
     );
   }
 
-  public async updateOne(userId: string, userData: Partial<User>): Promise<UserDTO> {
+  public async updateOne(userId: string, userData: Partial<User>): Promise<UserDto> {
     const user = await this.findOneById(userId);
 
     if (!user) {
@@ -98,7 +98,7 @@ export class UserRepository {
       { session: this.session },
     );
 
-    return this.findOneById(userId) as Promise<UserDTO>;
+    return this.findOneById(userId) as Promise<UserDto>;
   }
 }
 

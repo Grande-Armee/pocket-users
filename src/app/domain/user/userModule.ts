@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
+import { UserSchema, USER_MODEL } from './entities/user';
 import { UserMapper } from './mappers/user/userMapper';
 import { bcryptProvider } from './providers/bcrypt';
 import { jwtProvider } from './providers/jwt';
 import { userConfigProvider } from './providers/userConfig/userConfigProvider';
 import { UserRepositoryFactory } from './repositories/user/userRepository';
-import { UserSchema, USER_MODEL } from './schemas/user';
 import { HashService } from './services/hash/hashService';
 import { TokenService } from './services/token/tokenService';
 import { UserService } from './services/user/userService';

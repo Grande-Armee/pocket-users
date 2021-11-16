@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { UnitOfWork } from '@shared/unitOfWork/providers/unitOfWorkFactory';
 
-import { UserDTO } from '../../dtos/userDTO';
+import { UserDto } from '../../dtos/userDto';
 import { UserRepositoryFactory } from '../../repositories/user/userRepository';
 import { HashService } from '../hash/hashService';
 import { TokenService } from '../token/tokenService';
@@ -42,7 +42,7 @@ export class UserService {
     return accessToken;
   }
 
-  public async setNewPassword(unitOfWork: UnitOfWork, userId: string, newPassword: string): Promise<UserDTO> {
+  public async setNewPassword(unitOfWork: UnitOfWork, userId: string, newPassword: string): Promise<UserDto> {
     const session = unitOfWork.getSession();
     const userRepository = this.userRepositoryFactory.create(session);
 
@@ -53,11 +53,11 @@ export class UserService {
     return user;
   }
 
-  public async createUser(unitOfWork: UnitOfWork, userData: CreateUserData): Promise<UserDTO> {
+  public async createUser(unitOfWork: UnitOfWork, userData: CreateUserData): Promise<UserDto> {
     const session = unitOfWork.getSession();
     const userRepository = this.userRepositoryFactory.create(session);
 
-    const { email, password } = userData;
+    const { email, password, language } = userData;
 
     const existingUser = await userRepository.findOneByEmail(email);
 
@@ -68,12 +68,13 @@ export class UserService {
     const user = await userRepository.createOne({
       email,
       password: await this.hashService.hashPassword(password),
+      language,
     });
 
     return user;
   }
 
-  public async findUser(unitOfWork: UnitOfWork, userId: string): Promise<UserDTO> {
+  public async findUser(unitOfWork: UnitOfWork, userId: string): Promise<UserDto> {
     const session = unitOfWork.getSession();
     const userRepository = this.userRepositoryFactory.create(session);
 
@@ -86,7 +87,7 @@ export class UserService {
     return user;
   }
 
-  public async updateUser(unitOfWork: UnitOfWork, userId: string, userData: UpdateUserData): Promise<UserDTO> {
+  public async updateUser(unitOfWork: UnitOfWork, userId: string, userData: UpdateUserData): Promise<UserDto> {
     const session = unitOfWork.getSession();
     const userRepository = this.userRepositoryFactory.create(session);
 

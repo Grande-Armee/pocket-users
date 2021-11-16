@@ -20,7 +20,8 @@ export class TestModuleHelper {
 
   private getEnvVariables(): EnvVariables {
     return {
-      SHOULD_PRETTIFY_LOGS: true,
+      LOGGER_SHOULD_PRETTIFY_LOGS: true,
+      LOGGER_LOG_LEVEL: 'debug',
       MONGODB_ROOT_USERNAME: `root`,
       MONGODB_ROOT_PASSWORD: `password`,
       MONGODB_USERNAME: `pocket`,
