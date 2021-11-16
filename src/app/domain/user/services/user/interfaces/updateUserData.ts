@@ -1,3 +1,5 @@
+import { UserLanguage } from '../../../entities/types/userLanguage';
+
 export interface UpdateUserData {
-  readonly language: string;
+  readonly language: UserLanguage;
 }

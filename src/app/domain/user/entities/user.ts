@@ -2,6 +2,9 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Model, SchemaTypes } from 'mongoose';
 import { v4 } from 'uuid';
 
+import { UserLanguage } from './types/userLanguage';
+import { UserRole } from './types/userRole';
+
 @Schema({
   timestamps: true,
   collection: 'users',
@@ -33,16 +36,16 @@ export class User {
   public isActive: boolean;
 
   @Prop({
-    default: 'USER',
+    default: UserRole.admin,
     type: SchemaTypes.String,
   })
-  public role: string;
+  public role: UserRole;
 
   @Prop({
-    default: 'en',
+    default: UserLanguage.en,
     type: SchemaTypes.String,
   })
-  public language: string;
+  public language: UserLanguage;
 
   @Prop({
     type: SchemaTypes.Date,

@@ -3,9 +3,10 @@ import { TestingModule } from '@nestjs/testing';
 import { MongoHelper } from '@integration/helpers/mongoHelper/mongoHelper';
 import { TestModuleHelper } from '@integration/helpers/testModuleHelper/testModuleHelper';
 
-import { UserDTO } from '../../dtos/userDTO';
+import { UserDto } from '../../dtos/userDto';
+import { UserLanguage } from '../../entities/types/userLanguage';
 import { UserRepositoryFactory } from '../../repositories/user/userRepository';
-import { UserTestFactory } from '../../testsFactories/userTestFactory';
+import { UserTestDataGenerator } from '../../testDataGenerators/userTestDataGenerator';
 import { HashService } from '../hash/hashService';
 import { TokenService } from '../token/tokenService';
 import { UserService } from './userService';
@@ -13,6 +14,7 @@ import { UserService } from './userService';
 describe('UserService', () => {
   let testingModule: TestingModule;
   let mongoHelper: MongoHelper;
+  let userTestDataGenerator: UserTestDataGenerator;
 
   let userService: UserService;
   let userRepositoryFactory: UserRepositoryFactory;
@@ -22,6 +24,7 @@ describe('UserService', () => {
   beforeEach(async () => {
     testingModule = await TestModuleHelper.createTestingModule();
     mongoHelper = new MongoHelper(testingModule);
+    userTestDataGenerator = new UserTestDataGenerator();
 
     userService = testingModule.get(UserService);
     userRepositoryFactory = testingModule.get(UserRepositoryFactory);
@@ -41,21 +44,21 @@ describe('UserService', () => {
         const session = unitOfWork.getSession();
         const userRepository = userRepositoryFactory.create(session);
 
-        const email = UserTestFactory.createEmail();
-        const password = UserTestFactory.createPassword();
-        const language = UserTestFactory.createLanguage();
+        const { email, password, language } = userTestDataGenerator.generateEntityData();
 
-        const userDTO = await userService.createUser(unitOfWork, {
+        const userDto = await userService.createUser(unitOfWork, {
           email,
           password,
           language,
         });
 
-        expect(userDTO.email).toBe(email);
-        expect(await hashService.comparePasswords(password, userDTO.password)).toBeTruthy();
-        expect(userDTO.language).toBe(language);
+        console.log({ x: userDto.language, l: language });
 
-        const user = (await userRepository.findOneById(userDTO.id)) as UserDTO;
+        expect(userDto.email).toBe(email);
+        expect(await hashService.comparePasswords(password, userDto.password)).toBeTruthy();
+        expect(userDto.language).toBe(language);
+
+        const user = (await userRepository.findOneById(userDto.id)) as UserDto;
 
         expect(user).not.toBeNull();
         expect(await hashService.comparePasswords(password, user.password)).toBeTruthy();
@@ -70,9 +73,7 @@ describe('UserService', () => {
         const session = unitOfWork.getSession();
         const userRepository = userRepositoryFactory.create(session);
 
-        const email = UserTestFactory.createEmail();
-        const password = UserTestFactory.createPassword();
-        const language = UserTestFactory.createLanguage();
+        const { email, password, language } = userTestDataGenerator.generateEntityData();
 
         await userRepository.createOne({
           email,
@@ -102,8 +103,7 @@ describe('UserService', () => {
       expect.assertions(1);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const email = UserTestFactory.createEmail();
-        const password = UserTestFactory.createPassword();
+        const { email, password } = userTestDataGenerator.generateEntityData();
 
         try {
           await userService.loginUser(unitOfWork, {
@@ -123,11 +123,11 @@ describe('UserService', () => {
         const session = unitOfWork.getSession();
         const userRepository = userRepositoryFactory.create(session);
 
-        const email = UserTestFactory.createEmail();
-        const password = UserTestFactory.createPassword();
+        const { email, password, language } = userTestDataGenerator.generateEntityData();
+
+        const { password: invalidPassword } = userTestDataGenerator.generateEntityData();
+
         const hashedPassword = await hashService.hashPassword(password);
-        const invalidPassword = UserTestFactory.createPassword();
-        const language = UserTestFactory.createLanguage();
 
         await userRepository.createOne({
           email,
@@ -153,10 +153,9 @@ describe('UserService', () => {
         const session = unitOfWork.getSession();
         const userRepository = userRepositoryFactory.create(session);
 
-        const email = UserTestFactory.createEmail();
-        const password = UserTestFactory.createPassword();
+        const { email, password, language } = userTestDataGenerator.generateEntityData();
+
         const hashedPassword = await hashService.hashPassword(password);
-        const language = UserTestFactory.createLanguage();
 
         const user = await userRepository.createOne({
           email,
@@ -184,8 +183,7 @@ describe('UserService', () => {
       expect.assertions(1);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const userId = UserTestFactory.createId();
-        const newPassword = UserTestFactory.createPassword();
+        const { _id: userId, password: newPassword } = userTestDataGenerator.generateEntityData();
 
         try {
           await userService.setNewPassword(unitOfWork, userId, newPassword);
@@ -202,11 +200,10 @@ describe('UserService', () => {
         const session = unitOfWork.getSession();
         const userRepository = userRepositoryFactory.create(session);
 
-        const email = UserTestFactory.createEmail();
-        const password = UserTestFactory.createPassword();
+        const { email, password, language } = userTestDataGenerator.generateEntityData();
+        const { password: newPassword } = userTestDataGenerator.generateEntityData();
+
         const hashedPassword = await hashService.hashPassword(password);
-        const newPassword = UserTestFactory.createPassword();
-        const language = UserTestFactory.createLanguage();
 
         const user = await userRepository.createOne({
           email,
@@ -218,7 +215,7 @@ describe('UserService', () => {
 
         expect(await hashService.comparePasswords(newPassword, userDTO.password)).toBe(true);
 
-        const userInDb = (await userRepository.findOneById(userDTO.id)) as UserDTO;
+        const userInDb = (await userRepository.findOneById(userDTO.id)) as UserDto;
 
         expect(userInDb).not.toBeNull();
         expect(await hashService.comparePasswords(newPassword, userInDb.password)).toBe(true);
@@ -234,8 +231,7 @@ describe('UserService', () => {
         const session = unitOfWork.getSession();
         const userRepository = userRepositoryFactory.create(session);
 
-        const email = UserTestFactory.createEmail();
-        const password = UserTestFactory.createPassword();
+        const { email, password } = userTestDataGenerator.generateEntityData();
 
         /* Create the user using a tested interface */
         const userDTO = await userRepository.createOne({
@@ -254,7 +250,7 @@ describe('UserService', () => {
       expect.assertions(1);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const userId = UserTestFactory.createId();
+        const { _id: userId } = userTestDataGenerator.generateEntityData();
 
         /* Try finding user using the interface under test */
         try {
@@ -274,16 +270,16 @@ describe('UserService', () => {
         const session = unitOfWork.getSession();
         const userRepository = userRepositoryFactory.create(session);
 
-        const email = UserTestFactory.createEmail();
-        const password = UserTestFactory.createPassword();
-        const originalLanguage = 'en';
-        const newLanguage = 'pl';
+        const { email, password } = userTestDataGenerator.generateEntityData();
+
+        const language = UserLanguage.en;
+        const newLanguage = UserLanguage.pl;
 
         /* Create the user using a tested interface */
         const userDTO = await userRepository.createOne({
           email,
           password,
-          language: originalLanguage,
+          language,
         });
 
         /* Update the user data using the interface under test */
@@ -302,8 +298,7 @@ describe('UserService', () => {
       expect.assertions(1);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const userId = UserTestFactory.createId();
-        const language = UserTestFactory.createLanguage();
+        const { _id: userId, language } = userTestDataGenerator.generateEntityData();
 
         /* Try updating the user data using the interface under test */
         try {
@@ -323,8 +318,7 @@ describe('UserService', () => {
         const session = unitOfWork.getSession();
         const userRepository = userRepositoryFactory.create(session);
 
-        const email = UserTestFactory.createEmail();
-        const password = UserTestFactory.createPassword();
+        const { email, password } = userTestDataGenerator.generateEntityData();
 
         /* Create the user using a tested interface */
         const userDTO = await userRepository.createOne({
@@ -346,7 +340,7 @@ describe('UserService', () => {
       expect.assertions(1);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const userId = UserTestFactory.createId();
+        const { _id: userId } = userTestDataGenerator.generateEntityData();
 
         /* Try removing the user using the interface under test */
         try {
