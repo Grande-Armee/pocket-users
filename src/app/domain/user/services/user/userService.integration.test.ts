@@ -52,8 +52,6 @@ describe('UserService', () => {
           language,
         });
 
-        console.log({ x: userDto.language, l: language });
-
         expect(userDto.email).toBe(email);
         expect(await hashService.comparePasswords(password, userDto.password)).toBeTruthy();
         expect(userDto.language).toBe(language);

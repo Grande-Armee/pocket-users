@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 
-import { unitOfWorkFactoryProvider } from './providers/unitOfWorkFactory';
+import { UnitOfWorkFactory } from './providers/unitOfWorkFactory';
 
 @Module({
-  providers: [unitOfWorkFactoryProvider],
-  exports: [unitOfWorkFactoryProvider],
+  providers: [UnitOfWorkFactory],
+  exports: [UnitOfWorkFactory],
 })
 export class UnitOfWorkModule {}
