@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { UnitOfWork } from '@shared/unitOfWork/providers/unitOfWorkFactory';
+import { MongoUnitOfWork } from '@shared/unitOfWork/providers/unitOfWorkFactory';
 
 import { UserDto } from '../../dtos/userDto';
 import { UserRepositoryFactory } from '../../repositories/user/userRepository';
@@ -16,7 +16,7 @@ export class UserService {
     private readonly userRepositoryFactory: UserRepositoryFactory,
   ) {}
 
-  public async loginUser(unitOfWork: UnitOfWork, loginData: LoginUserData): Promise<string> {
+  public async loginUser(unitOfWork: MongoUnitOfWork, loginData: LoginUserData): Promise<string> {
     const session = unitOfWork.getSession();
     const userRepository = this.userRepositoryFactory.create(session);
 
@@ -42,7 +42,7 @@ export class UserService {
     return accessToken;
   }
 
-  public async setNewPassword(unitOfWork: UnitOfWork, userId: string, newPassword: string): Promise<UserDto> {
+  public async setNewPassword(unitOfWork: MongoUnitOfWork, userId: string, newPassword: string): Promise<UserDto> {
     const session = unitOfWork.getSession();
     const userRepository = this.userRepositoryFactory.create(session);
 
@@ -53,7 +53,7 @@ export class UserService {
     return user;
   }
 
-  public async createUser(unitOfWork: UnitOfWork, userData: CreateUserData): Promise<UserDto> {
+  public async createUser(unitOfWork: MongoUnitOfWork, userData: CreateUserData): Promise<UserDto> {
     const session = unitOfWork.getSession();
     const userRepository = this.userRepositoryFactory.create(session);
 
@@ -74,7 +74,7 @@ export class UserService {
     return user;
   }
 
-  public async findUser(unitOfWork: UnitOfWork, userId: string): Promise<UserDto> {
+  public async findUser(unitOfWork: MongoUnitOfWork, userId: string): Promise<UserDto> {
     const session = unitOfWork.getSession();
     const userRepository = this.userRepositoryFactory.create(session);
 
@@ -87,7 +87,7 @@ export class UserService {
     return user;
   }
 
-  public async updateUser(unitOfWork: UnitOfWork, userId: string, userData: UpdateUserData): Promise<UserDto> {
+  public async updateUser(unitOfWork: MongoUnitOfWork, userId: string, userData: UpdateUserData): Promise<UserDto> {
     const session = unitOfWork.getSession();
     const userRepository = this.userRepositoryFactory.create(session);
 
@@ -102,7 +102,7 @@ export class UserService {
     return user;
   }
 
-  public async removeUser(unitOfWork: UnitOfWork, userId: string): Promise<void> {
+  public async removeUser(unitOfWork: MongoUnitOfWork, userId: string): Promise<void> {
     const session = unitOfWork.getSession();
     const userRepository = this.userRepositoryFactory.create(session);
 

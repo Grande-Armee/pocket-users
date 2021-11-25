@@ -1,11 +1,12 @@
+import { TransactionalCallback } from '@grande-armee/pocket-common';
 import { TestingModule } from '@nestjs/testing';
 
-import { TransactionalCallback, UnitOfWorkFactory } from '@shared/unitOfWork/providers/unitOfWorkFactory';
+import { MongoUnitOfWork, UnitOfWorkFactory } from '@shared/unitOfWork/providers/unitOfWorkFactory';
 
 export class MongoHelper {
   public constructor(private readonly testingModule: TestingModule) {}
 
-  public async runInTestTransaction<Result>(callback: TransactionalCallback<Result>): Promise<void> {
+  public async runInTestTransaction<Result>(callback: TransactionalCallback<Result, MongoUnitOfWork>): Promise<void> {
     const unitOfWorkFactory = this.testingModule.get(UnitOfWorkFactory);
     const unitOfWork = await unitOfWorkFactory.create();
 
