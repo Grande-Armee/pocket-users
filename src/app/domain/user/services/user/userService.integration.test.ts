@@ -41,7 +41,7 @@ describe('UserService', () => {
       expect.assertions(6);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const session = unitOfWork.getSession();
+        const { session } = unitOfWork;
         const userRepository = userRepositoryFactory.create(session);
 
         const { email, password, language } = userTestDataGenerator.generateEntityData();
@@ -68,7 +68,7 @@ describe('UserService', () => {
       expect.assertions(2);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const session = unitOfWork.getSession();
+        const { session } = unitOfWork;
         const userRepository = userRepositoryFactory.create(session);
 
         const { email, password, language } = userTestDataGenerator.generateEntityData();
@@ -118,7 +118,7 @@ describe('UserService', () => {
       expect.assertions(1);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const session = unitOfWork.getSession();
+        const { session } = unitOfWork;
         const userRepository = userRepositoryFactory.create(session);
 
         const { email, password, language } = userTestDataGenerator.generateEntityData();
@@ -148,7 +148,7 @@ describe('UserService', () => {
       expect.assertions(3);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const session = unitOfWork.getSession();
+        const { session } = unitOfWork;
         const userRepository = userRepositoryFactory.create(session);
 
         const { email, password, language } = userTestDataGenerator.generateEntityData();
@@ -195,7 +195,7 @@ describe('UserService', () => {
       expect.assertions(3);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const session = unitOfWork.getSession();
+        const { session } = unitOfWork;
         const userRepository = userRepositoryFactory.create(session);
 
         const { email, password, language } = userTestDataGenerator.generateEntityData();
@@ -226,7 +226,7 @@ describe('UserService', () => {
       expect.assertions(1);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const session = unitOfWork.getSession();
+        const { session } = unitOfWork;
         const userRepository = userRepositoryFactory.create(session);
 
         const { email, password } = userTestDataGenerator.generateEntityData();
@@ -265,7 +265,7 @@ describe('UserService', () => {
       expect.assertions(1);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const session = unitOfWork.getSession();
+        const { session } = unitOfWork;
         const userRepository = userRepositoryFactory.create(session);
 
         const { email, password } = userTestDataGenerator.generateEntityData();
@@ -313,7 +313,7 @@ describe('UserService', () => {
       expect.assertions(1);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const session = unitOfWork.getSession();
+        const { session } = unitOfWork;
         const userRepository = userRepositoryFactory.create(session);
 
         const { email, password } = userTestDataGenerator.generateEntityData();
