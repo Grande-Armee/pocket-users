@@ -17,7 +17,7 @@ export class UserService {
   ) {}
 
   public async loginUser(unitOfWork: MongoUnitOfWork, loginData: LoginUserData): Promise<string> {
-    const session = unitOfWork.getSession();
+    const { session } = unitOfWork;
     const userRepository = this.userRepositoryFactory.create(session);
 
     const { email, password } = loginData;
@@ -43,7 +43,7 @@ export class UserService {
   }
 
   public async setNewPassword(unitOfWork: MongoUnitOfWork, userId: string, newPassword: string): Promise<UserDto> {
-    const session = unitOfWork.getSession();
+    const { session } = unitOfWork;
     const userRepository = this.userRepositoryFactory.create(session);
 
     const user = await userRepository.updateOne(userId, {
@@ -54,7 +54,7 @@ export class UserService {
   }
 
   public async createUser(unitOfWork: MongoUnitOfWork, userData: CreateUserData): Promise<UserDto> {
-    const session = unitOfWork.getSession();
+    const { session } = unitOfWork;
     const userRepository = this.userRepositoryFactory.create(session);
 
     const { email, password, language } = userData;
@@ -75,7 +75,7 @@ export class UserService {
   }
 
   public async findUser(unitOfWork: MongoUnitOfWork, userId: string): Promise<UserDto> {
-    const session = unitOfWork.getSession();
+    const { session } = unitOfWork;
     const userRepository = this.userRepositoryFactory.create(session);
 
     const user = await userRepository.findOneById(userId);
@@ -88,7 +88,7 @@ export class UserService {
   }
 
   public async updateUser(unitOfWork: MongoUnitOfWork, userId: string, userData: UpdateUserData): Promise<UserDto> {
-    const session = unitOfWork.getSession();
+    const { session } = unitOfWork;
     const userRepository = this.userRepositoryFactory.create(session);
 
     const { language } = userData;
@@ -103,7 +103,7 @@ export class UserService {
   }
 
   public async removeUser(unitOfWork: MongoUnitOfWork, userId: string): Promise<void> {
-    const session = unitOfWork.getSession();
+    const { session } = unitOfWork;
     const userRepository = this.userRepositoryFactory.create(session);
 
     await userRepository.removeOne(userId);

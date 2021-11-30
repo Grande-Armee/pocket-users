@@ -28,7 +28,8 @@
     "test:integration:cov": "npm run test:integration -- --coverage"
   },
   "dependencies": {
-    "@grande-armee/pocket-common": "^1.6.0",
+    "@golevelup/nestjs-rabbitmq": "^1.18.1",
+    "@grande-armee/pocket-common": "^1.7.0",
     "@nestjs/common": "^8.2.3",
     "@nestjs/core": "^8.2.3",
     "@nestjs/microservices": "^8.2.3",
@@ -71,7 +72,7 @@
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^7.0.4",
-    "jest": "^27.3.1",
+    "jest": "^27.4.0",
     "lint-staged": "^12.1.2",
     "prettier": "^2.5.0",
     "ts-jest": "^27.0.7",

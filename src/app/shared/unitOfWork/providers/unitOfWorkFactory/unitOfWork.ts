@@ -5,8 +5,8 @@ import { ClientSession } from './interfaces';
 export class MongoUnitOfWork extends UnitOfWork {
   public constructor(
     protected override readonly logger: LoggerService,
-    protected override readonly integrationEventsDispatcher: IntegrationEventsDispatcher,
-    protected readonly session: ClientSession,
+    public override readonly integrationEventsDispatcher: IntegrationEventsDispatcher,
+    public readonly session: ClientSession,
   ) {
     super(logger, integrationEventsDispatcher);
   }
@@ -16,7 +16,6 @@ export class MongoUnitOfWork extends UnitOfWork {
   }
 
   public async commit(): Promise<void> {
-    console.log('x');
     await this.session.commitTransaction();
 
     await this.integrationEventsDispatcher.dispatch();
@@ -28,9 +27,5 @@ export class MongoUnitOfWork extends UnitOfWork {
 
   public async cleanUp(): Promise<void> {
     await this.session.endSession();
-  }
-
-  public getSession(): ClientSession {
-    return this.session;
   }
 }
