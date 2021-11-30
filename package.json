@@ -28,6 +28,7 @@
     "test:integration:cov": "npm run test:integration -- --coverage"
   },
   "dependencies": {
+    "@golevelup/nestjs-rabbitmq": "^1.18.1",
     "@grande-armee/pocket-common": "^1.7.0",
     "@nestjs/common": "^8.2.3",
     "@nestjs/core": "^8.2.3",

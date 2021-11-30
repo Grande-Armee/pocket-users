@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
+import { UserBrokerController } from './controllers/broker/user/userController';
 import { UserSchema, USER_MODEL } from './entities/user';
 import { UserMapper } from './mappers/user/userMapper';
 import { bcryptProvider } from './providers/bcrypt';
@@ -22,6 +23,7 @@ import { UserService } from './services/user/userService';
     HashService,
     TokenService,
     userConfigProvider,
+    UserBrokerController,
   ],
   exports: [UserService],
 })
