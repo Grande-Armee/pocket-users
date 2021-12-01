@@ -25,7 +25,7 @@ async function bootstrap(): Promise<void> {
 
   const userTransporter = app.get(UserTransporter);
 
-  const res = await userTransporter.createUser({
+  const res = await userTransporter.loginUser({
     email: 'email@rmail.com',
     password: 'password',
   });
