@@ -1,8 +1,6 @@
-import { EntityTestDataGenerator, NonNullableEntity } from '@grande-armee/pocket-common';
+import { EntityTestDataGenerator, NonNullableEntity, UserLanguage, UserRole } from '@grande-armee/pocket-common';
 import { internet, datatype, date, helpers } from 'faker';
 
-import { UserLanguage } from '../entities/types/userLanguage';
-import { UserRole } from '../entities/types/userRole';
 import { User } from '../entities/user';
 
 type UserTestData = NonNullableEntity<Omit<User, ''>>;
