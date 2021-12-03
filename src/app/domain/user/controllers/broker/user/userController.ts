@@ -1,19 +1,23 @@
-import { DtoFactory } from '@grande-armee/pocket-common';
-
-import { BrokerController } from '@shared/broker/decorators/brokerController';
-import { RpcRoute } from '@shared/broker/decorators/rpcRoute';
-import { CreateUserPayloadDto, CreateUserResponseDto } from '@shared/broker/domain/user/requests/createUser';
-import { FindUserPayloadDto, FindUserResponseDto } from '@shared/broker/domain/user/requests/findUser';
-import { LoginUserPayloadDto, LoginUserResponseDto } from '@shared/broker/domain/user/requests/loginUser';
-import { RemoveUserPayloadDto } from '@shared/broker/domain/user/requests/removeUser';
 import {
+  BrokerController,
+  BrokerMessage,
+  BrokerService,
+  CreateUserPayloadDto,
+  CreateUserResponseDto,
+  DtoFactory,
+  FindUserPayloadDto,
+  FindUserResponseDto,
+  LoginUserPayloadDto,
+  LoginUserResponseDto,
+  RemoveUserPayloadDto,
+  RpcRoute,
   SetNewPasswordPayloadDto,
   SetNewPasswordResponseDto,
-} from '@shared/broker/domain/user/requests/setNewPassword';
-import { UpdateUserPayloadDto, UpdateUserResponseDto } from '@shared/broker/domain/user/requests/updateUser';
-import { UserRoutingKey } from '@shared/broker/domain/user/userRoutingKey';
-import { BrokerService } from '@shared/broker/services/broker/brokerService';
-import { BrokerMessage } from '@shared/broker/types';
+  UpdateUserPayloadDto,
+  UpdateUserResponseDto,
+  UserRoutingKey,
+} from '@grande-armee/pocket-common';
+
 import { UnitOfWorkFactory } from '@shared/unitOfWork/providers/unitOfWorkFactory';
 
 import { UserService } from '../../../services/user/userService';
@@ -45,7 +49,7 @@ export class UserBrokerController {
       return user;
     });
 
-    return this.dtoFactory.createDtoInstance(CreateUserResponseDto, {
+    return this.dtoFactory.create(CreateUserResponseDto, {
       user: {
         id: user.id,
         createdAt: user.createdAt,
@@ -72,7 +76,7 @@ export class UserBrokerController {
       return user;
     });
 
-    return this.dtoFactory.createDtoInstance(FindUserResponseDto, {
+    return this.dtoFactory.create(FindUserResponseDto, {
       user: {
         id: user.id,
         createdAt: user.createdAt,
@@ -99,7 +103,7 @@ export class UserBrokerController {
       return user;
     });
 
-    return this.dtoFactory.createDtoInstance(UpdateUserResponseDto, {
+    return this.dtoFactory.create(UpdateUserResponseDto, {
       user: {
         id: user.id,
         createdAt: user.createdAt,
@@ -142,7 +146,7 @@ export class UserBrokerController {
       return token;
     });
 
-    return this.dtoFactory.createDtoInstance(LoginUserResponseDto, { token });
+    return this.dtoFactory.create(LoginUserResponseDto, { token });
   }
 
   @RpcRoute(UserRoutingKey.setNewPassword)
@@ -159,7 +163,7 @@ export class UserBrokerController {
       return user;
     });
 
-    return this.dtoFactory.createDtoInstance(SetNewPasswordResponseDto, {
+    return this.dtoFactory.create(SetNewPasswordResponseDto, {
       user: {
         id: user.id,
         createdAt: user.createdAt,

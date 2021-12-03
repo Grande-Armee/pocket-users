@@ -1,4 +1,4 @@
-import { UserLanguage } from '../../../entities/types/userLanguage';
+import { UserLanguage } from '@grande-armee/pocket-common';
 
 export interface CreateUserData {
   readonly email: string;

@@ -1,9 +1,7 @@
+import { UserLanguage, UserRole } from '@grande-armee/pocket-common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Model, SchemaTypes } from 'mongoose';
 import { v4 } from 'uuid';
-
-import { UserLanguage } from './types/userLanguage';
-import { UserRole } from './types/userRole';
 
 @Schema({
   timestamps: true,

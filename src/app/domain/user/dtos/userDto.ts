@@ -1,27 +1,25 @@
-import { Expose } from 'class-transformer';
-
-import { UserLanguage } from '../entities/types/userLanguage';
-import { UserRole } from '../entities/types/userRole';
+import { UserLanguage, UserRole } from '@grande-armee/pocket-common';
+import { IsDate, IsEnum, IsString, IsUUID } from 'class-validator';
 
 export class UserDto {
-  @Expose()
+  @IsUUID('4')
   public readonly id: string;
 
-  @Expose()
+  @IsDate()
   public readonly createdAt: Date;
 
-  @Expose()
+  @IsDate()
   public readonly updatedAt: Date;
 
-  @Expose()
+  @IsString()
   public readonly email: string;
 
-  @Expose()
+  @IsString()
   public readonly password: string;
 
-  @Expose()
+  @IsEnum(UserRole)
   public readonly role: UserRole;
 
-  @Expose()
+  @IsEnum(UserLanguage)
   public readonly language: UserLanguage;
 }

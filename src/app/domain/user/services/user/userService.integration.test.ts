@@ -1,10 +1,10 @@
+import { UserLanguage } from '@grande-armee/pocket-common';
 import { TestingModule } from '@nestjs/testing';
 
 import { MongoHelper } from '@integration/helpers/mongoHelper/mongoHelper';
 import { TestModuleHelper } from '@integration/helpers/testModuleHelper/testModuleHelper';
 
 import { UserDto } from '../../dtos/userDto';
-import { UserLanguage } from '../../entities/types/userLanguage';
 import { UserRepositoryFactory } from '../../repositories/user/userRepository';
 import { UserTestDataGenerator } from '../../testDataGenerators/userTestDataGenerator';
 import { HashService } from '../hash/hashService';
