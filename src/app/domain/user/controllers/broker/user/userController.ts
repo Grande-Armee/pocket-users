@@ -33,7 +33,6 @@ export class UserBrokerController {
 
   @RpcRoute(UserRoutingKey.createUser)
   public async createUser(_: unknown, message: BrokerMessage): Promise<CreateUserResponseDto> {
-    console.log('calling creatUser handler');
     const unitOfWork = await this.unitOfWorkFactory.create();
 
     const { data } = await this.brokerService.parseMessage(CreateUserPayloadDto, message);
@@ -119,7 +118,6 @@ export class UserBrokerController {
 
   @RpcRoute(UserRoutingKey.removeUser)
   public async removeUser(_: unknown, message: BrokerMessage): Promise<void> {
-    console.log('remove user route');
     const unitOfWork = await this.unitOfWorkFactory.create();
 
     const { data } = await this.brokerService.parseMessage(RemoveUserPayloadDto, message);
@@ -133,7 +131,6 @@ export class UserBrokerController {
 
   @RpcRoute(UserRoutingKey.loginUser)
   public async loginUser(_: unknown, message: BrokerMessage): Promise<LoginUserResponseDto> {
-    console.log('login route');
     const unitOfWork = await this.unitOfWorkFactory.create();
 
     const { data } = await this.brokerService.parseMessage(LoginUserPayloadDto, message);
