@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { RepositoryFactory } from '@shared/mongo/interfaces';
 import { ClientSession } from '@shared/unitOfWork/providers/unitOfWorkFactory';
+import { RepositoryFactory } from '@src/app/shared/mongo/types';
 
 import { UserDto } from '../../dtos/userDto';
 import { User, UserModel, USER_MODEL } from '../../entities/user';

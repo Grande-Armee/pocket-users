@@ -1,3 +1,3 @@
-export { Jwt } from './interfaces';
+export { Jwt } from './types';
 
 export * from './jwtProvider';

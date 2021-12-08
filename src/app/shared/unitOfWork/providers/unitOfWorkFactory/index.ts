@@ -1,3 +1,3 @@
-export { ClientSession } from './interfaces';
+export { ClientSession } from './types';
 export * from './unitOfWork';
 export * from './unitOfWorkFactory';

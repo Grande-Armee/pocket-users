@@ -1,2 +1,2 @@
-export { MongoConfig } from './interfaces';
+export { MongoConfig } from './types';
 export * from './mongoConfigProvider';

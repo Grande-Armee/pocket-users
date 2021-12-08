@@ -1,6 +1,6 @@
 import { ConfigService, Joi } from '@grande-armee/pocket-common';
 
-import { UserConfig } from './interfaces';
+import { UserConfig } from './types';
 
 export const userConfigFactory = async (configService: ConfigService, joi: Joi): Promise<UserConfig> => {
   return configService.validateConfig<UserConfig>(
