@@ -1,6 +1,6 @@
 import { LoggerService, IntegrationEventsDispatcher, UnitOfWork } from '@grande-armee/pocket-common';
 
-import { ClientSession } from './interfaces';
+import { ClientSession } from './types';
 
 export class MongoUnitOfWork extends UnitOfWork {
   public constructor(

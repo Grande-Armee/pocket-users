@@ -1,2 +1,2 @@
-export { UserConfig } from './interfaces';
+export { UserConfig } from './types';
 export * from './userConfigProvider';

@@ -1,3 +1,3 @@
-export { Bcrypt } from './interfaces';
+export { Bcrypt } from './types';
 
 export * from './bcryptProvider';

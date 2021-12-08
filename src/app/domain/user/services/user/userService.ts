@@ -7,7 +7,7 @@ import { UserDto } from '../../dtos/userDto';
 import { UserRepositoryFactory } from '../../repositories/user/userRepository';
 import { HashService } from '../hash/hashService';
 import { TokenService } from '../token/tokenService';
-import { LoginUserData, CreateUserData, UpdateUserData } from './interfaces';
+import { LoginUserData, CreateUserData, UpdateUserData } from './types';
 
 @Injectable()
 export class UserService {
