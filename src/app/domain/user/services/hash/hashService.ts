@@ -1,14 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 
+import { config } from '@shared/config';
+
 import { BCRYPT, Bcrypt } from '../../providers/bcrypt';
-import { UserConfig, USER_CONFIG } from '../../providers/userConfig';
 
 @Injectable()
 export class HashService {
-  public constructor(
-    @Inject(BCRYPT) private readonly bcrypt: Bcrypt,
-    @Inject(USER_CONFIG) private readonly userConfig: UserConfig,
-  ) {}
+  public constructor(@Inject(BCRYPT) private readonly bcrypt: Bcrypt) {}
 
   public async hashPassword(plaintextPassword: string): Promise<string> {
     const salt = await this.generateSalt();
@@ -21,6 +19,6 @@ export class HashService {
   }
 
   public async generateSalt(): Promise<string> {
-    return this.bcrypt.genSalt(this.userConfig.hashSaltRounds);
+    return this.bcrypt.genSalt(config.encryption.hashSaltRounds);
   }
 }

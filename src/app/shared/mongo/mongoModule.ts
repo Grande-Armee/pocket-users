@@ -1,14 +1,13 @@
 import { Global, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { mongoConfigProvider } from './providers/mongoConfig';
+import { config } from '@shared/config';
 
 @Global()
 @Module({
   imports: [
-    MongooseModule.forRootAsync({
-      imports: [],
-      ...mongoConfigProvider,
+    MongooseModule.forRoot(config.database.uri, {
+      appName: config.appName,
     }),
   ],
   exports: [MongooseModule],

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
+import { RepositoryFactory } from '@shared/mongo/types';
 import { ClientSession } from '@shared/unitOfWork/providers/unitOfWorkFactory';
-import { RepositoryFactory } from '@src/app/shared/mongo/types';
 
 import { UserDto } from '../../dtos/userDto';
 import { User, UserModel, USER_MODEL } from '../../entities/user';
@@ -81,7 +81,7 @@ export class UserRepository {
     );
   }
 
-  public async updateOne(userId: string, userData: Partial<User>): Promise<UserDto> {
+  public async updateOne(userId: string, userData: Partial<Omit<User, '_id'>>): Promise<UserDto> {
     const user = await this.findOneById(userId);
 
     if (!user) {
@@ -92,9 +92,7 @@ export class UserRepository {
       {
         _id: userId,
       },
-      {
-        ...userData,
-      },
+      { ...userData },
       { session: this.session },
     );
 

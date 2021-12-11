@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 
+import { BrokerApiModule } from './brokerApi/brokerApiModule';
 import { DomainModule } from './domain/domainModule';
-import { SharedModule } from './shared/sharedModule';
+import { LoggerModule } from './shared/logger/loggerModule';
+import { MongoModule } from './shared/mongo/mongoModule';
+import { UnitOfWorkModule } from './shared/unitOfWork/unitOfWorkModule';
 
 @Module({
-  imports: [SharedModule, DomainModule],
+  imports: [LoggerModule, MongoModule, UnitOfWorkModule, DomainModule, BrokerApiModule],
 })
 export class AppModule {}
