@@ -18,9 +18,8 @@ import {
   UserRoutingKey,
 } from '@grande-armee/pocket-common';
 
+import { UserService } from '@domain/user/services/user/userService';
 import { UnitOfWorkFactory } from '@shared/unitOfWork/providers/unitOfWorkFactory';
-
-import { UserService } from '../../../services/user/userService';
 
 @BrokerController()
 export class UserBrokerController {

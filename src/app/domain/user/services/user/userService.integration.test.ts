@@ -1,8 +1,11 @@
 import { UserLanguage } from '@grande-armee/pocket-common';
-import { TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 
+import { DomainModule } from '@domain/domainModule';
 import { MongoHelper } from '@integration/helpers/mongoHelper/mongoHelper';
-import { TestModuleHelper } from '@integration/helpers/testModuleHelper/testModuleHelper';
+import { LoggerModule } from '@shared/logger/loggerModule';
+import { MongoModule } from '@shared/mongo/mongoModule';
+import { UnitOfWorkModule } from '@shared/unitOfWork/unitOfWorkModule';
 
 import { UserDto } from '../../dtos/userDto';
 import { UserRepositoryFactory } from '../../repositories/user/userRepository';
@@ -22,7 +25,10 @@ describe('UserService', () => {
   let hashService: HashService;
 
   beforeEach(async () => {
-    testingModule = await TestModuleHelper.createTestingModule();
+    testingModule = await Test.createTestingModule({
+      imports: [LoggerModule, MongoModule, UnitOfWorkModule, DomainModule],
+    }).compile();
+
     mongoHelper = new MongoHelper(testingModule);
     userTestDataGenerator = new UserTestDataGenerator();
 

@@ -1,14 +1,14 @@
-import { LoggerService, IntegrationEventsDispatcher, UnitOfWork } from '@grande-armee/pocket-common';
+import { LoggerService, IntegrationEventsStore, UnitOfWork } from '@grande-armee/pocket-common';
 
 import { ClientSession } from './types';
 
 export class MongoUnitOfWork extends UnitOfWork {
   public constructor(
     protected override readonly logger: LoggerService,
-    public override readonly integrationEventsDispatcher: IntegrationEventsDispatcher,
+    public override readonly integrationEventsStore: IntegrationEventsStore,
     public readonly session: ClientSession,
   ) {
-    super(logger, integrationEventsDispatcher);
+    super(logger, integrationEventsStore);
   }
 
   public async init(): Promise<void> {
@@ -17,8 +17,6 @@ export class MongoUnitOfWork extends UnitOfWork {
 
   public async commit(): Promise<void> {
     await this.session.commitTransaction();
-
-    await this.integrationEventsDispatcher.dispatch();
   }
 
   public async rollback(): Promise<void> {
