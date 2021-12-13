@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { InvalidEmailOrPasswordError, UserNotFoundError } from '@domain/user/errors';
 import { UserAlreadyExistsError } from '@domain/user/errors/userAlreadyExistsError';
 import {
-  SetNewPasswordEvent,
+  UserPasswordChangedEvent,
   UserCreatedEvent,
   UserRemovedEvent,
   UserUpdatedEvent,
@@ -67,14 +67,8 @@ export class UserService {
     });
 
     integrationEventsStore.addEvent(
-      new SetNewPasswordEvent({
-        id: user.id,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-        email: user.email,
-        password: user.password,
-        role: user.role,
-        language: user.language,
+      new UserPasswordChangedEvent({
+        userId: user.id,
       }),
     );
 
@@ -109,7 +103,6 @@ export class UserService {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         email: user.email,
-        password: user.password,
         role: user.role,
         language: user.language,
       }),
@@ -153,7 +146,6 @@ export class UserService {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         email: user.email,
-        password: user.password,
         role: user.role,
         language: user.language,
       }),

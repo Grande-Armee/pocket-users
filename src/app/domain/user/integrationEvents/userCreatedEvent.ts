@@ -5,7 +5,6 @@ export interface UserCreatedEventPayload {
   readonly createdAt: Date;
   readonly updatedAt: Date;
   readonly email: string;
-  readonly password: string;
   readonly role: UserRole;
   readonly language: UserLanguage;
 }

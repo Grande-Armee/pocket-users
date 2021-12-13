@@ -5,7 +5,7 @@ import { DomainModule } from '@domain/domainModule';
 import { InvalidEmailOrPasswordError, UserNotFoundError } from '@domain/user/errors';
 import { UserAlreadyExistsError } from '@domain/user/errors/userAlreadyExistsError';
 import {
-  SetNewPasswordEvent,
+  UserPasswordChangedEvent,
   UserCreatedEvent,
   UserRemovedEvent,
   UserUpdatedEvent,
@@ -240,7 +240,7 @@ describe('UserService', () => {
         const integrationEvents = integrationEventsStore.getEvents();
 
         expect(integrationEvents).toHaveLength(1);
-        expect(integrationEvents.at(0)).toBeInstanceOf(SetNewPasswordEvent);
+        expect(integrationEvents.at(0)).toBeInstanceOf(UserPasswordChangedEvent);
       });
     });
   });
