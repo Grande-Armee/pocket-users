@@ -5,5 +5,5 @@ export interface UserPasswordChangedEventPayload {
 }
 
 export class UserPasswordChangedEvent extends IntegrationEvent<UserPasswordChangedEventPayload> {
-  public readonly name = 'pocket.users.auth.userPasswordChanged';
+  public readonly name = 'pocket.users.users.userPasswordChanged';
 }
