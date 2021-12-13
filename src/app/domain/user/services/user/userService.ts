@@ -1,8 +1,7 @@
 import { LoggerService } from '@grande-armee/pocket-common';
 import { Injectable } from '@nestjs/common';
 
-import { InvalidEmailOrPasswordError, UserNotFoundError } from '@domain/user/errors';
-import { UserAlreadyExistsError } from '@domain/user/errors/userAlreadyExistsError';
+import { UserAlreadyExistsError, UserNotFoundError } from '@domain/user/errors';
 import {
   UserPasswordChangedEvent,
   UserCreatedEvent,
@@ -37,13 +36,13 @@ export class UserService {
     const user = await userRepository.findOneByEmail(email);
 
     if (!user) {
-      throw new InvalidEmailOrPasswordError();
+      throw new UserNotFoundError({ email });
     }
 
     const isPasswordValid = await this.hashService.comparePasswords(password, user.password);
 
     if (!isPasswordValid) {
-      throw new InvalidEmailOrPasswordError();
+      throw new UserNotFoundError({ email });
     }
 
     const accessToken = await this.tokenService.signAccessToken({

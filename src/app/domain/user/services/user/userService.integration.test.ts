@@ -2,8 +2,7 @@ import { UserLanguage } from '@grande-armee/pocket-common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { DomainModule } from '@domain/domainModule';
-import { InvalidEmailOrPasswordError, UserNotFoundError } from '@domain/user/errors';
-import { UserAlreadyExistsError } from '@domain/user/errors/userAlreadyExistsError';
+import { UserNotFoundError, UserAlreadyExistsError } from '@domain/user/errors';
 import {
   UserPasswordChangedEvent,
   UserCreatedEvent,
@@ -128,7 +127,7 @@ describe('UserService', () => {
             password,
           });
         } catch (error) {
-          expect(error).toBeInstanceOf(InvalidEmailOrPasswordError);
+          expect(error).toBeInstanceOf(UserNotFoundError);
         }
       });
     });
@@ -158,7 +157,7 @@ describe('UserService', () => {
             password: invalidPassword,
           });
         } catch (error) {
-          expect(error).toBeInstanceOf(InvalidEmailOrPasswordError);
+          expect(error).toBeInstanceOf(UserNotFoundError);
         }
       });
     });

@@ -1,2 +1,2 @@
 export * from './userNotFoundError';
-export * from './invalidEmailOrPasswordError';
+export * from './userAlreadyExistsError';
