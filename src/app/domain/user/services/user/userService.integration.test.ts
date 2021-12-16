@@ -2,6 +2,13 @@ import { UserLanguage } from '@grande-armee/pocket-common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { DomainModule } from '@domain/domainModule';
+import { UserNotFoundError, UserAlreadyExistsError } from '@domain/user/errors';
+import {
+  UserPasswordChangedEvent,
+  UserCreatedEvent,
+  UserRemovedEvent,
+  UserUpdatedEvent,
+} from '@domain/user/integrationEvents';
 import { MongoHelper } from '@integration/helpers/mongoHelper/mongoHelper';
 import { LoggerModule } from '@shared/logger/loggerModule';
 import { MongoModule } from '@shared/mongo/mongoModule';
@@ -44,10 +51,10 @@ describe('UserService', () => {
 
   describe('Create user', () => {
     it('creates a user in the database', async () => {
-      expect.assertions(6);
+      expect.assertions(8);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const { session } = unitOfWork;
+        const { session, integrationEventsStore } = unitOfWork;
         const userRepository = userRepositoryFactory.create(session);
 
         const { email, password, language } = userTestDataGenerator.generateEntityData();
@@ -67,6 +74,11 @@ describe('UserService', () => {
         expect(user).not.toBeNull();
         expect(await hashService.comparePasswords(password, user.password)).toBeTruthy();
         expect(user?.email).toBe(email);
+
+        const integrationEvents = integrationEventsStore.getEvents();
+
+        expect(integrationEvents).toHaveLength(1);
+        expect(integrationEvents.at(0)).toBeInstanceOf(UserCreatedEvent);
       });
     });
 
@@ -92,7 +104,7 @@ describe('UserService', () => {
             language,
           });
         } catch (error) {
-          expect(error).toBeTruthy();
+          expect(error).toBeInstanceOf(UserAlreadyExistsError);
         }
 
         const users = await userRepository.findAll();
@@ -115,7 +127,7 @@ describe('UserService', () => {
             password,
           });
         } catch (error) {
-          expect(error).toBeTruthy();
+          expect(error).toBeInstanceOf(UserNotFoundError);
         }
       });
     });
@@ -145,7 +157,7 @@ describe('UserService', () => {
             password: invalidPassword,
           });
         } catch (error) {
-          expect(error).toBeTruthy();
+          expect(error).toBeInstanceOf(UserNotFoundError);
         }
       });
     });
@@ -192,16 +204,16 @@ describe('UserService', () => {
         try {
           await userService.setNewPassword(unitOfWork, userId, newPassword);
         } catch (error) {
-          expect(error).toBeTruthy();
+          expect(error).toBeInstanceOf(UserNotFoundError);
         }
       });
     });
 
     it('should change user password when user is found', async () => {
-      expect.assertions(3);
+      expect.assertions(5);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const { session } = unitOfWork;
+        const { session, integrationEventsStore } = unitOfWork;
         const userRepository = userRepositoryFactory.create(session);
 
         const { email, password, language } = userTestDataGenerator.generateEntityData();
@@ -223,6 +235,11 @@ describe('UserService', () => {
 
         expect(userInDb).not.toBeNull();
         expect(await hashService.comparePasswords(newPassword, userInDb.password)).toBe(true);
+
+        const integrationEvents = integrationEventsStore.getEvents();
+
+        expect(integrationEvents).toHaveLength(1);
+        expect(integrationEvents.at(0)).toBeInstanceOf(UserPasswordChangedEvent);
       });
     });
   });
@@ -237,13 +254,11 @@ describe('UserService', () => {
 
         const { email, password } = userTestDataGenerator.generateEntityData();
 
-        /* Create the user using a tested interface */
         const userDTO = await userRepository.createOne({
           email,
           password,
         });
 
-        /* Find user using the interface under test */
         const user = await userService.findUser(unitOfWork, userDTO.id);
 
         expect(user).not.toBeNull();
@@ -256,11 +271,10 @@ describe('UserService', () => {
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
         const { _id: userId } = userTestDataGenerator.generateEntityData();
 
-        /* Try finding user using the interface under test */
         try {
           await userService.findUser(unitOfWork, userId);
-        } catch (e: any) {
-          expect(e.message).toBe('User not found');
+        } catch (error) {
+          expect(error).toBeInstanceOf(UserNotFoundError);
         }
       });
     });
@@ -268,10 +282,10 @@ describe('UserService', () => {
 
   describe('Update user', () => {
     it('updates user data in the database', async () => {
-      expect.assertions(1);
+      expect.assertions(3);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const { session } = unitOfWork;
+        const { session, integrationEventsStore } = unitOfWork;
         const userRepository = userRepositoryFactory.create(session);
 
         const { email, password } = userTestDataGenerator.generateEntityData();
@@ -279,22 +293,24 @@ describe('UserService', () => {
         const language = UserLanguage.en;
         const newLanguage = UserLanguage.pl;
 
-        /* Create the user using a tested interface */
         const userDTO = await userRepository.createOne({
           email,
           password,
           language,
         });
 
-        /* Update the user data using the interface under test */
         await userService.updateUser(unitOfWork, userDTO.id, {
           language: newLanguage,
         });
 
-        /* Assert user data successfully updated */
         const user = await userRepository.findOneById(userDTO.id);
 
         expect(user?.language).toBe(newLanguage);
+
+        const integrationEvents = integrationEventsStore.getEvents();
+
+        expect(integrationEvents).toHaveLength(1);
+        expect(integrationEvents.at(0)).toBeInstanceOf(UserUpdatedEvent);
       });
     });
 
@@ -304,11 +320,10 @@ describe('UserService', () => {
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
         const { _id: userId, language } = userTestDataGenerator.generateEntityData();
 
-        /* Try updating the user data using the interface under test */
         try {
           await userService.updateUser(unitOfWork, userId, { language });
-        } catch (e: any) {
-          expect(e.message).toBe('User not found');
+        } catch (error) {
+          expect(error).toBeInstanceOf(UserNotFoundError);
         }
       });
     });
@@ -316,27 +331,29 @@ describe('UserService', () => {
 
   describe('Remove user', () => {
     it('removes a user from the databse', async () => {
-      expect.assertions(1);
+      expect.assertions(3);
 
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
-        const { session } = unitOfWork;
+        const { session, integrationEventsStore } = unitOfWork;
         const userRepository = userRepositoryFactory.create(session);
 
         const { email, password } = userTestDataGenerator.generateEntityData();
 
-        /* Create the user using a tested interface */
         const userDTO = await userRepository.createOne({
           email,
           password,
         });
 
-        /* Remove the user using the interface under test */
         await userService.removeUser(unitOfWork, userDTO.id);
 
-        /* Assert user is no longer in the database */
         const user = await userRepository.findOneById(userDTO.id);
 
         expect(user).toBeNull();
+
+        const integrationEvents = integrationEventsStore.getEvents();
+
+        expect(integrationEvents).toHaveLength(1);
+        expect(integrationEvents.at(0)).toBeInstanceOf(UserRemovedEvent);
       });
     });
 
@@ -346,11 +363,10 @@ describe('UserService', () => {
       await mongoHelper.runInTestTransaction(async (unitOfWork) => {
         const { _id: userId } = userTestDataGenerator.generateEntityData();
 
-        /* Try removing the user using the interface under test */
         try {
           await userService.removeUser(unitOfWork, userId);
-        } catch (e: any) {
-          expect(e.message).toBe('User not found');
+        } catch (error) {
+          expect(error).toBeInstanceOf(UserNotFoundError);
         }
       });
     });

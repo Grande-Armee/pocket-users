@@ -48,7 +48,7 @@ export class UserBrokerController {
       return user;
     });
 
-    return this.dtoFactory.create(CreateUserResponseDto, {
+    const result = this.dtoFactory.create(CreateUserResponseDto, {
       user: {
         id: user.id,
         createdAt: user.createdAt,
@@ -59,6 +59,10 @@ export class UserBrokerController {
         role: user.role,
       },
     });
+
+    await this.brokerService.publishEvents(unitOfWork.integrationEventsStore.getEvents());
+
+    return result;
   }
 
   @RpcRoute(UserRoutingKey.findUser)
@@ -102,7 +106,7 @@ export class UserBrokerController {
       return user;
     });
 
-    return this.dtoFactory.create(UpdateUserResponseDto, {
+    const result = this.dtoFactory.create(UpdateUserResponseDto, {
       user: {
         id: user.id,
         createdAt: user.createdAt,
@@ -113,6 +117,10 @@ export class UserBrokerController {
         role: user.role,
       },
     });
+
+    await this.brokerService.publishEvents(unitOfWork.integrationEventsStore.getEvents());
+
+    return result;
   }
 
   @RpcRoute(UserRoutingKey.removeUser)
@@ -126,6 +134,8 @@ export class UserBrokerController {
 
       await this.userService.removeUser(unitOfWork, userId);
     });
+
+    await this.brokerService.publishEvents(unitOfWork.integrationEventsStore.getEvents());
   }
 
   @RpcRoute(UserRoutingKey.loginUser)
@@ -162,7 +172,7 @@ export class UserBrokerController {
       return user;
     });
 
-    return this.dtoFactory.create(SetNewPasswordResponseDto, {
+    const result = this.dtoFactory.create(SetNewPasswordResponseDto, {
       user: {
         id: user.id,
         createdAt: user.createdAt,
@@ -173,5 +183,9 @@ export class UserBrokerController {
         role: user.role,
       },
     });
+
+    await this.brokerService.publishEvents(unitOfWork.integrationEventsStore.getEvents());
+
+    return result;
   }
 }

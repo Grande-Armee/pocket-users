@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
+import { UserNotFoundError } from '@domain/user/errors';
 import { RepositoryFactory } from '@shared/mongo/types';
 import { ClientSession } from '@shared/unitOfWork/providers/unitOfWorkFactory';
 
@@ -70,7 +71,7 @@ export class UserRepository {
     const user = await this.findOneById(userId);
 
     if (!user) {
-      throw new Error('User not found');
+      throw new UserNotFoundError({ id: userId });
     }
 
     await this.userModel.deleteOne(
@@ -85,7 +86,7 @@ export class UserRepository {
     const user = await this.findOneById(userId);
 
     if (!user) {
-      throw new Error('User not found');
+      throw new UserNotFoundError({ id: userId });
     }
 
     await this.userModel.updateOne(
