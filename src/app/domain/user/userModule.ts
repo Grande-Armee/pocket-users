@@ -1,4 +1,3 @@
-import { DtoModule } from '@grande-armee/pocket-common';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -12,7 +11,7 @@ import { TokenService } from './services/token/tokenService';
 import { UserService } from './services/user/userService';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: USER_MODEL, schema: UserSchema }]), DtoModule],
+  imports: [MongooseModule.forFeature([{ name: USER_MODEL, schema: UserSchema }])],
   providers: [UserService, UserRepositoryFactory, UserMapper, jwtProvider, bcryptProvider, HashService, TokenService],
   exports: [UserService],
 })

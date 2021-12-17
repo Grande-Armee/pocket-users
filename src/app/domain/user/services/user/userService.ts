@@ -1,13 +1,14 @@
-import { LoggerService } from '@grande-armee/pocket-common';
-import { Injectable } from '@nestjs/common';
-
-import { UserAlreadyExistsError, UserNotFoundError } from '@domain/user/errors';
 import {
-  UserPasswordChangedEvent,
+  LoggerService,
+  UserAlreadyExistsError,
   UserCreatedEvent,
+  UserNotFoundError,
+  UserPasswordChangedEvent,
   UserRemovedEvent,
   UserUpdatedEvent,
-} from '@domain/user/integrationEvents';
+} from '@grande-armee/pocket-common';
+import { Injectable } from '@nestjs/common';
+
 import { MongoUnitOfWork } from '@shared/unitOfWork/providers/unitOfWorkFactory';
 
 import { UserDto } from '../../dtos/userDto';

@@ -1,4 +1,4 @@
-import { DtoFactory, Mapper } from '@grande-armee/pocket-common';
+import { Mapper } from '@grande-armee/pocket-common';
 import { Injectable } from '@nestjs/common';
 
 import { UserDto } from '../../dtos/userDto';
@@ -6,10 +6,8 @@ import { User } from '../../entities/user';
 
 @Injectable()
 export class UserMapper implements Mapper<User, UserDto> {
-  public constructor(private readonly dtoFactory: DtoFactory) {}
-
   public mapEntityToDto(entity: User): UserDto {
-    return this.dtoFactory.create(UserDto, {
+    return UserDto.create({
       id: entity._id,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,

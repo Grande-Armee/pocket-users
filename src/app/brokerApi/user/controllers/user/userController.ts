@@ -4,7 +4,6 @@ import {
   BrokerService,
   CreateUserPayloadDto,
   CreateUserResponseDto,
-  DtoFactory,
   FindUserPayloadDto,
   FindUserResponseDto,
   LoginUserPayloadDto,
@@ -26,7 +25,6 @@ export class UserBrokerController {
   public constructor(
     private readonly unitOfWorkFactory: UnitOfWorkFactory,
     private readonly brokerService: BrokerService,
-    private readonly dtoFactory: DtoFactory,
     private readonly userService: UserService,
   ) {}
 
@@ -34,10 +32,11 @@ export class UserBrokerController {
   public async createUser(_: unknown, message: BrokerMessage): Promise<CreateUserResponseDto> {
     const unitOfWork = await this.unitOfWorkFactory.create();
 
-    const { data } = await this.brokerService.parseMessage(CreateUserPayloadDto, message);
+    const { data } = await this.brokerService.parseMessage(message);
+    const payload = CreateUserPayloadDto.create(data.payload);
 
     const user = await unitOfWork.runInTransaction(async () => {
-      const { email, password, language } = data.payload;
+      const { email, password, language } = payload;
 
       const user = await this.userService.createUser(unitOfWork, {
         email,
@@ -48,7 +47,7 @@ export class UserBrokerController {
       return user;
     });
 
-    const result = this.dtoFactory.create(CreateUserResponseDto, {
+    const result = CreateUserResponseDto.create({
       user: {
         id: user.id,
         createdAt: user.createdAt,
@@ -69,17 +68,18 @@ export class UserBrokerController {
   public async findUser(_: unknown, message: BrokerMessage): Promise<FindUserResponseDto> {
     const unitOfWork = await this.unitOfWorkFactory.create();
 
-    const { data } = await this.brokerService.parseMessage(FindUserPayloadDto, message);
+    const { data } = await this.brokerService.parseMessage(message);
+    const payload = FindUserPayloadDto.create(data.payload);
 
     const user = await unitOfWork.runInTransaction(async () => {
-      const { userId } = data.payload;
+      const { userId } = payload;
 
       const user = await this.userService.findUser(unitOfWork, userId);
 
       return user;
     });
 
-    return this.dtoFactory.create(FindUserResponseDto, {
+    return FindUserResponseDto.create({
       user: {
         id: user.id,
         createdAt: user.createdAt,
@@ -96,17 +96,18 @@ export class UserBrokerController {
   public async updateUser(_: unknown, message: BrokerMessage): Promise<UpdateUserResponseDto> {
     const unitOfWork = await this.unitOfWorkFactory.create();
 
-    const { data } = await this.brokerService.parseMessage(UpdateUserPayloadDto, message);
+    const { data } = await this.brokerService.parseMessage(message);
+    const payload = UpdateUserPayloadDto.create(data.payload);
 
     const user = await unitOfWork.runInTransaction(async () => {
-      const { userId, language } = data.payload;
+      const { userId, language } = payload;
 
       const user = await this.userService.updateUser(unitOfWork, userId, { language });
 
       return user;
     });
 
-    const result = this.dtoFactory.create(UpdateUserResponseDto, {
+    const result = UpdateUserResponseDto.create({
       user: {
         id: user.id,
         createdAt: user.createdAt,
@@ -127,10 +128,11 @@ export class UserBrokerController {
   public async removeUser(_: unknown, message: BrokerMessage): Promise<void> {
     const unitOfWork = await this.unitOfWorkFactory.create();
 
-    const { data } = await this.brokerService.parseMessage(RemoveUserPayloadDto, message);
+    const { data } = await this.brokerService.parseMessage(message);
+    const payload = RemoveUserPayloadDto.create(data.payload);
 
     await unitOfWork.runInTransaction(async () => {
-      const { userId } = data.payload;
+      const { userId } = payload;
 
       await this.userService.removeUser(unitOfWork, userId);
     });
@@ -142,10 +144,11 @@ export class UserBrokerController {
   public async loginUser(_: unknown, message: BrokerMessage): Promise<LoginUserResponseDto> {
     const unitOfWork = await this.unitOfWorkFactory.create();
 
-    const { data } = await this.brokerService.parseMessage(LoginUserPayloadDto, message);
+    const { data } = await this.brokerService.parseMessage(message);
+    const payload = LoginUserPayloadDto.create(data.payload);
 
     const token = await unitOfWork.runInTransaction(async () => {
-      const { email, password } = data.payload;
+      const { email, password } = payload;
 
       const token = await this.userService.loginUser(unitOfWork, {
         email,
@@ -155,24 +158,25 @@ export class UserBrokerController {
       return token;
     });
 
-    return this.dtoFactory.create(LoginUserResponseDto, { token });
+    return LoginUserResponseDto.create({ token });
   }
 
   @RpcRoute(UserRoutingKey.setNewPassword)
   public async setNewPassword(_: unknown, message: BrokerMessage): Promise<SetNewPasswordResponseDto> {
     const unitOfWork = await this.unitOfWorkFactory.create();
 
-    const { data } = await this.brokerService.parseMessage(SetNewPasswordPayloadDto, message);
+    const { data } = await this.brokerService.parseMessage(message);
+    const payload = SetNewPasswordPayloadDto.create(data.payload);
 
     const user = await unitOfWork.runInTransaction(async () => {
-      const { userId, newPassword } = data.payload;
+      const { userId, newPassword } = payload;
 
       const user = await this.userService.setNewPassword(unitOfWork, userId, newPassword);
 
       return user;
     });
 
-    const result = this.dtoFactory.create(SetNewPasswordResponseDto, {
+    const result = SetNewPasswordResponseDto.create({
       user: {
         id: user.id,
         createdAt: user.createdAt,
