@@ -1,4 +1,4 @@
-import { ClsModule, DtoModule } from '@grande-armee/pocket-common';
+import { ClsModule } from '@grande-armee/pocket-common';
 import { Module } from '@nestjs/common';
 
 import { DomainModule } from '@domain/domainModule';
@@ -8,6 +8,6 @@ import { UnitOfWorkModule } from '@shared/unitOfWork/unitOfWorkModule';
 import { UserBrokerModule } from './user/userBrokerModule';
 
 @Module({
-  imports: [BrokerModule, UnitOfWorkModule, DtoModule, DomainModule, ClsModule, UserBrokerModule],
+  imports: [BrokerModule, UnitOfWorkModule, DomainModule, ClsModule, UserBrokerModule],
 })
 export class BrokerApiModule {}

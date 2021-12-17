@@ -1,14 +1,15 @@
-import { UserLanguage } from '@grande-armee/pocket-common';
+import {
+  UserAlreadyExistsError,
+  UserCreatedEvent,
+  UserLanguage,
+  UserNotFoundError,
+  UserPasswordChangedEvent,
+  UserRemovedEvent,
+  UserUpdatedEvent,
+} from '@grande-armee/pocket-common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { DomainModule } from '@domain/domainModule';
-import { UserNotFoundError, UserAlreadyExistsError } from '@domain/user/errors';
-import {
-  UserPasswordChangedEvent,
-  UserCreatedEvent,
-  UserRemovedEvent,
-  UserUpdatedEvent,
-} from '@domain/user/integrationEvents';
 import { MongoHelper } from '@integration/helpers/mongoHelper/mongoHelper';
 import { LoggerModule } from '@shared/logger/loggerModule';
 import { MongoModule } from '@shared/mongo/mongoModule';
@@ -227,11 +228,11 @@ describe('UserService', () => {
           language,
         });
 
-        const userDTO = await userService.setNewPassword(unitOfWork, user.id, newPassword);
+        const userDto = await userService.setNewPassword(unitOfWork, user.id, newPassword);
 
-        expect(await hashService.comparePasswords(newPassword, userDTO.password)).toBe(true);
+        expect(await hashService.comparePasswords(newPassword, userDto.password)).toBe(true);
 
-        const userInDb = (await userRepository.findOneById(userDTO.id)) as UserDto;
+        const userInDb = (await userRepository.findOneById(userDto.id)) as UserDto;
 
         expect(userInDb).not.toBeNull();
         expect(await hashService.comparePasswords(newPassword, userInDb.password)).toBe(true);
@@ -254,12 +255,12 @@ describe('UserService', () => {
 
         const { email, password } = userTestDataGenerator.generateEntityData();
 
-        const userDTO = await userRepository.createOne({
+        const userDto = await userRepository.createOne({
           email,
           password,
         });
 
-        const user = await userService.findUser(unitOfWork, userDTO.id);
+        const user = await userService.findUser(unitOfWork, userDto.id);
 
         expect(user).not.toBeNull();
       });
@@ -293,17 +294,17 @@ describe('UserService', () => {
         const language = UserLanguage.en;
         const newLanguage = UserLanguage.pl;
 
-        const userDTO = await userRepository.createOne({
+        const userDto = await userRepository.createOne({
           email,
           password,
           language,
         });
 
-        await userService.updateUser(unitOfWork, userDTO.id, {
+        await userService.updateUser(unitOfWork, userDto.id, {
           language: newLanguage,
         });
 
-        const user = await userRepository.findOneById(userDTO.id);
+        const user = await userRepository.findOneById(userDto.id);
 
         expect(user?.language).toBe(newLanguage);
 
@@ -339,14 +340,14 @@ describe('UserService', () => {
 
         const { email, password } = userTestDataGenerator.generateEntityData();
 
-        const userDTO = await userRepository.createOne({
+        const userDto = await userRepository.createOne({
           email,
           password,
         });
 
-        await userService.removeUser(unitOfWork, userDTO.id);
+        await userService.removeUser(unitOfWork, userDto.id);
 
-        const user = await userRepository.findOneById(userDTO.id);
+        const user = await userRepository.findOneById(userDto.id);
 
         expect(user).toBeNull();
 

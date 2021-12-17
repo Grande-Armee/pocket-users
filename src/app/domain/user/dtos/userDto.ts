@@ -1,4 +1,4 @@
-import { UserLanguage, UserRole } from '@grande-armee/pocket-common';
+import { Transformer, UserLanguage, UserRole } from '@grande-armee/pocket-common';
 import { IsDate, IsEnum, IsString, IsUUID } from 'class-validator';
 
 export class UserDto {
@@ -22,4 +22,6 @@ export class UserDto {
 
   @IsEnum(UserLanguage)
   public readonly language: UserLanguage;
+
+  public static readonly create = Transformer.createInstanceFactory(UserDto);
 }

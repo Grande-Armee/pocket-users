@@ -1,7 +1,7 @@
+import { UserNotFoundError } from '@grande-armee/pocket-common';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { UserNotFoundError } from '@domain/user/errors';
 import { RepositoryFactory } from '@shared/mongo/types';
 import { ClientSession } from '@shared/unitOfWork/providers/unitOfWorkFactory';
 
