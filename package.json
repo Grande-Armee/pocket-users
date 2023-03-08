@@ -31,7 +31,7 @@
     "@golevelup/nestjs-rabbitmq": "^1.18.1",
     "@grande-armee/pocket-common": "^3.5.0",
     "@nestjs/common": "^8.2.4",
-    "@nestjs/core": "^8.2.4",
+    "@nestjs/core": "^9.0.5",
     "@nestjs/microservices": "^8.2.4",
     "@nestjs/mongoose": "^9.0.1",
     "amqp-connection-manager": "^3.7.0",
